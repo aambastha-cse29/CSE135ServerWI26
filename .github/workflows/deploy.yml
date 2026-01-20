@@ -1,0 +1,38 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install rsync
+        run: sudo apt-get update && sudo apt-get install -y rsync
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DROPLET_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.DROPLET_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy main site
+        run: |
+          rsync -az --delete ./main/ \
+            "${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_HOST }}:/var/www/cse135wi2026.site/public_html/"
+
+      - name: Deploy collector site
+        run: |
+          rsync -az --delete ./collector/ \
+            "${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_HOST }}:/var/www/collector.cse135wi2026.site/public_html/"
+
+      - name: Deploy reporting site
+        run: |
+          rsync -az --delete ./reporting/ \
+            "${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_HOST }}:/var/www/reporting.cse135wi2026.site/public_html/"
+
