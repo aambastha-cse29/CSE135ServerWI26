@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Me</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #f4f6f8;
+      color: #333;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 60px auto;
+      padding: 40px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 2.3rem;
+    }
+
+    h2 {
+      margin-top: 35px;
+      font-size: 1.5rem;
+      color: #0077ff;
+    }
+
+    p {
+      line-height: 1.7;
+      font-size: 1rem;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #e9f2ff;
+      color: #005fd1;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      margin-right: 6px;
+      margin-top: 6px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 16px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      background-color: #0077ff;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005fd1;
+    }
+
+    .extra {
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>About Me</h1>
+
+    <p>
+      Hi, I’m <strong>Aman</strong>, a computer science student with a strong interest
+      in understanding how software systems work at a deeper level — from networking
+      and operating systems to web infrastructure and machine learning.
+    </p>
+
+    <p>
+      I enjoy focusing on <strong>core concepts</strong> rather than just memorizing
+      frameworks, and I like working on projects that connect theory with real-world
+      systems.
+    </p>
+
+    <h2>This Quarter</h2>
+
+    <p>
+      During the current quarter, I’m taking the following classes:
+    </p>
+
+    <ul>
+      <li><strong>CSE 135</strong> – Server Side Web Applications</li>
+      <li><strong>CSE 140</strong> – Digital Logic & Design/li>
+      <li><strong>CSE 156</strong> – Statistical Natural Language Processing</li>
+      <li><strong>CSE 105</strong> – Theory of Computation</li>
+    </ul>
+
+    <h2>Interests</h2>
+
+    <div>
+      <span class="tag">Systems</span>
+      <span class="tag">Web Infrastructure</span>
+      <span class="tag">Machine Learning</span>
+      <span class="tag">Algorithms</span>
+      <span class="tag">Software Engineering</span>
+    </div>
+
+    <button id="toggleBtn">More About Me</button>
+
+    <div class="extra" id="extraContent">
+      <p>
+        Outside of coursework, I enjoy experimenting with backend systems,
+        performance optimization, and learning how large-scale software is designed
+        and deployed. I’m particularly interested in how theory shows up in practice.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const btn = document.getElementById("toggleBtn");
+    const extra = document.getElementById("extraContent");
+
+    btn.addEventListener("click", () => {
+      const isHidden = extra.style.display === "" || extra.style.display === "none";
+      extra.style.display = isHidden ? "block" : "none";
+      btn.textContent = isHidden ? "Show less" : "More About Me";
+    });
+  </script>
+
+</body>
+</html>
