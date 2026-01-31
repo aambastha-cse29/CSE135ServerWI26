@@ -16,7 +16,7 @@ print("<body>")
 print("<h1 align='center'>Environment Variables - Python</h1><hr/>")
 print("<p>This Page Displays All Environment Variables Available To This CGI Script</p>")
 print("<table border='1'>")
-print("<tr><th>Variable Name</th><th>Value</th></tr>
+print("<tr><th>Variable Name</th><th>Value</th></tr>")
 
 for key, value in os.environ.items():
     print("<tr><td>{}</td><td>{}</td></tr>".format(key, value))
