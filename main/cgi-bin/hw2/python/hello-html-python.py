@@ -3,8 +3,8 @@
 import os
 from datetime import datetime
 
-print("Cache-Control: no-cache")
-print("Content-Type: text/html")
+print("Cache-Control: no-cache\n")
+print("Content-Type: text/html\n\n")
 
 print("<!DOCTYPE html>")
 print("<html>")
