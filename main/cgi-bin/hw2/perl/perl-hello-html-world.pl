@@ -13,6 +13,7 @@ print "<body>";
 print "<h1 align=center>Hello HTML World</h1><hr/>";
 print "<p>Hello World</p>";
 print "<p>This page was generated with the Perl programming langauge</p>";
+print "<p>Using the Common Gateway Interface (CGI) protocol - CSE 135 Team Aman Ambastha</p>";
 
 $date = localtime();
 print "<p>This program was generated at: $date</p>";
