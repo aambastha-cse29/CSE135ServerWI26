@@ -46,6 +46,8 @@ if query_string:
             value = key_value[1]
             print(f"<li><strong>{key}:</strong> {value}</li>")
     print("</ul>")
+else:
+    print("<p>No Query String Received.</p>")
 
 
 # Message Body
