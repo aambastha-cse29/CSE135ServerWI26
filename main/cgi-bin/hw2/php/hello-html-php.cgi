@@ -1,8 +1,7 @@
-#!/usr/bin/php-cgi
+#!/usr/bin/php
 <?php
-    header("Cache-Control: no-cache");
-    header("Content-Type: text/html");
-    echo "\n\n";
+    echo "Cache-Control: no-cache\n";
+    echo "Content-Type: text/html\n";
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "<head>\n";
