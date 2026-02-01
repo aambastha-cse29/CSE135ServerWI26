@@ -18,14 +18,14 @@
 
     session_start();
     
-    if (!isset($_SESSION['Name']) ) {
+    if (!isset($_SESSION['Name'])) {
         // CGI-style redirect header
         echo "Status: 302 Found\r\n";
         echo "Location: /state-collect-php.html\r\n";
         echo "\r\n";
         exit;
     }
-    
+
     // Send CGI headers
     echo "Content-Type: text/html\r\n";
     echo "\r\n";
@@ -41,9 +41,9 @@
     echo "<p>This Page Displays The Data Saved In The Session By The State Save PHP CGI Script</p>\n";
     echo "<h2>Saved Data:</h2>\n";
     echo "<ul>\n";
-    echo "<li><strong>Name:</strong> " $_SESSION['Name'] . "</li>\n";
-    echo "<li><strong>Favorite CSE Class:</strong> " $_SESSION['Favorite_CSE_Class'] . "</li>\n";
-    echo "<li><strong>Graduation Year:</strong> " $_SESSION['Graduation_Year'] . "</li>\n";
+    echo "<li><strong>Name:</strong> " . $_SESSION['Name'] . "</li>\n";
+    echo "<li><strong>Favorite CSE Class:</strong> " . $_SESSION['Favorite_CSE_Class'] . "</li>\n";
+    echo "<li><strong>Graduation Year:</strong> " . $_SESSION['Graduation_Year'] . "</li>\n";
     echo "</ul>\n";
 
     echo "<form method='POST' action='/cgi-bin/hw2/php/state-clear-php.cgi'>\n";
