@@ -22,23 +22,6 @@
     echo "Content-Type: text/html\r\n";
     echo "\r\n";
 
-    if (!isset($_SESSION['Name'])) {
-       echo "<!DOCTYPE html>\n";
-       echo "<html>\n";
-       echo "<head>\n";
-       echo "<title>Session Expired State - PHP</title>\n";
-       echo "</head>\n";
-
-       echo "<body>\n";
-       echo "<h1 align='center'>Session Not Active State - PHP</h1><hr/>\n";
-
-       echo '<p>Submit Data Here: <a href="/state-collect-php.html">Submit Data</a></p>';
-
-       echo "</body>\n";
-       echo "</html>\n";
-       exit;
-    }
-
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "<head>\n";
