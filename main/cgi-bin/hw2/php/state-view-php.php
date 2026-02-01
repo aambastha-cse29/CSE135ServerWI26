@@ -1,4 +1,3 @@
-#!/usr/bin/php
 <?php
    session_set_cookie_params([
       'lifetime' => 86400,
