@@ -2,8 +2,8 @@
 
 <?php
 
-    echo "Cache-Control: no-cache\n";
-    echo "Content-Type: text/html\n\n";
+    echo "Cache-Control: no-cache\r\n";
+    echo "Content-Type: text/html\r\n\r\n";
 
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
