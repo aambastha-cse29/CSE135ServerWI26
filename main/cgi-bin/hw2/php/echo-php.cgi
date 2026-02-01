@@ -50,7 +50,7 @@
     echo "<h2>Message Body:</h2>\n";
     $content_length = $_SERVER['CONTENT_LENGTH'] ?? 0;
     if ($content_length > 0) {
-        $message_body = file_get_contents('php://input');
+        $message_body = file_get_contents('php://stdin');
         echo "<pre>" . htmlspecialchars($message_body) . "</pre>\n";
     } 
     
