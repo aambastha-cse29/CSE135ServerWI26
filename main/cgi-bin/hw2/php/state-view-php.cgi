@@ -45,7 +45,7 @@
     error_log("VIEW SCRIPT - Session path: " . session_save_path());
     error_log("VIEW SCRIPT - Session data: " . print_r($_SESSION, true));
     
-    if (!isset($_SESSION['Name'])) {
+    if (!isset($_SESSION['Name']) || !isset($_SESSION['Favorite_CSE_Class']) || !isset($_SESSION['Graduation_Year'])) {
         error_log("VIEW SCRIPT - Name not set, redirecting");
         
         // CGI-style redirect header
