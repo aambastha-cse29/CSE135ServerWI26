@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/php-cgi
 <?php
     // Required CGI headers
     echo "Cache-Control: no-cache\n";
