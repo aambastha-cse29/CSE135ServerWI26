@@ -1,5 +1,8 @@
 #!/usr/bin/php
 <?php
+   echo  "Cache-Control: no-cache\n";
+   echo  "Content-Type: text/html\n\n";
+
    session_set_cookie_params([
       'lifetime' => 86400,
       'path' => '/',
