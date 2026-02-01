@@ -30,22 +30,20 @@
 
     if ($cookie_params['secure']) {
        $cookie_header .= "; Secure";
-    
-   }
+    }
 
     if ($cookie_params['httponly']) {
        $cookie_header .= "; HttpOnly";
-    
-   }
+    }
 
     if ($cookie_params['samesite']) {
        $cookie_header .= "; SameSite=" . $cookie_params['samesite'];
-   }
+    }
     
     if (!isset($_SESSION['Name'])) {
         // CGI-style redirect header
         echo "Set-Cookie: $cookie_header\r\n";
-        echo "Content-Type: text/html\r\n"
+        echo "Content-Type: text/html\r\n";  // ADDED SEMICOLON
         echo "Status: 302 Found\r\n";
         echo "Location: /state-collect-php.html\r\n";
         echo "\r\n";
@@ -53,7 +51,7 @@
     }
 
     // Send CGI headers
-    echo "Set-Cookie: $cookie_header\r\n"
+    echo "Set-Cookie: $cookie_header\r\n";  // ADDED SEMICOLON
     echo "Content-Type: text/html\r\n";
     echo "\r\n";
 
