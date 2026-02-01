@@ -1,4 +1,4 @@
-#!/usr/bin/php-cgi
+#!/usr/bin/php
 <?php
 // 1) Configure session cookie params BEFORE session_start AND before any output
 session_set_cookie_params([
