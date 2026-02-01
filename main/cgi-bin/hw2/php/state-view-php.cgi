@@ -18,11 +18,10 @@
 
     session_start();
 
-    echo "Set-Cookie: $cookie_header\r\n";  // ADDED SEMICOLON
+    // Send CGI headers (NO Set-Cookie needed here - just reading session)
     echo "Content-Type: text/html\r\n";
-    echo "\r\n"
+    echo "\r\n";
 
-    
     if (!isset($_SESSION['Name'])) {
        echo "<!DOCTYPE html>\n";
        echo "<html>\n";
@@ -37,7 +36,7 @@
 
        echo "</body>\n";
        echo "</html>\n";
-
+       exit;
     }
 
     echo "<!DOCTYPE html>\n";
