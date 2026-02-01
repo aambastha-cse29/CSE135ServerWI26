@@ -22,7 +22,7 @@ session_start();
 // CGI-specific: Parse POST data manually
 $_POST = array();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $raw_post = file_get_contents('php://input');
+    $raw_post = file_get_contents('php://stdin');
     parse_str($raw_post, $_POST);
 }
 
