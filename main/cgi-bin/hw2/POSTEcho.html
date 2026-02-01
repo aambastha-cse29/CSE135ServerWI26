@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-top: 20px;          /* controls how far from top */
+            display: flex;
+            flex-direction: column;
+            align-items: center;        /* horizontal centering */
+        }
+
+         label {
+           display: inline-block;
+           width: 100px;
+         }
+
+        input {
+           width: 200px;
+        }
+
+        button {
+           margin-top: 10px;
+           margin-right: 10px;
+      }
+       p {
+         margin: 0;
+        }   
+    </style>
+    <title>GET Echo</title>
+</head> 
+<body>
+    <h1>POST Echo</h1>
+    <form method = "POST" style="text-align:left;">
+        <label for ="Name:">Name:</label>
+        <input type="text" id="Name" name="Name">
+        <br><br>
+        <label for ="Age:">Age:</label>
+        <input type="text" id="Age" name="Age">
+        <br><br>
+        <label for ="City:">City Of Birth:</label>
+        <input type="text" id="City" name="City">
+        <br><br>
+        
+        <button type="submit" formaction="/python/echo-python.py">Submit To Python Endpoint</button>
+        <button type="submit" formaction="/php/echo-php.cgi">Submit To PHP Endpoint</button>
+        <button type="submit" formaction="/cpp/echo-cplusplus.cgi">Submit To C++ Endpoint</button>
+    </form>
+    <br>
+    <p>This Is A Simple HTML Form That Uses The POST Method To Send User Input To Different Server-Side Endpoints (Python, PHP, C++)</p>
+    <p>And Displays The Echoed Response Back To The User. This Form Only Has Capabilities To Send Data As x-www-form-urlencoded</p>
+</body>
+</html>
