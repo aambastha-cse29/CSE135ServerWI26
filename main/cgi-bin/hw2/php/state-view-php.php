@@ -29,8 +29,8 @@
     echo "<h2>Saved Data:</h2>\n";
     echo "<ul>\n";
     echo "<li><strong>Name:</strong> " . $_SESSION['Name'] . "</li>\n";
-    echo "<li><strong>Favorite CSE Class:</strong> " . $_SESSION['FavoriteClass'] . "</li>\n";
-    echo "<li><strong>Graduation Year:</strong> " . $_SESSION['GraduationYear'] . "</li>\n";
+    echo "<li><strong>Favorite CSE Class:</strong> " . $_SESSION['Favorite CSE Class'] . "</li>\n";
+    echo "<li><strong>Graduation Year:</strong> " . $_SESSION['Graduation Year'] . "</li>\n";
     echo "</ul>\n";
 
 
