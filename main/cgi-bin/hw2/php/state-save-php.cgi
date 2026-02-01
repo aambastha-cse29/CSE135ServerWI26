@@ -1,6 +1,9 @@
 #!/usr/bin/php
 <?php   
-  session_set_cookie_params([
+    echo  "Cache-Control: no-cache\n";
+    echo "Content-Type: text/html\n\n";
+
+    session_set_cookie_params([
       'lifetime' => 0,
       'path' => '/',
       'domain' => '',
@@ -13,7 +16,7 @@
 
     // Save POST data to session
     foreach ($_POST as $key => $value) {
-        $_SESSION[$key] = htmlspecialchars($value);
+        $_SESSION[$key] = $value;
     }
 
     header("Location: /state-view-php.cgi", true, 302);
