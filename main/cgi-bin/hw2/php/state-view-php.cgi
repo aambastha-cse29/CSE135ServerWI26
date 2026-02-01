@@ -17,6 +17,11 @@
     ]);
 
     session_start();
+
+    // Debug cookie information
+    error_log("VIEW SCRIPT - COOKIE array: " . print_r($_COOKIE, true));
+    error_log("VIEW SCRIPT - HTTP_COOKIE: " . ($_SERVER['HTTP_COOKIE'] ?? 'NOT SET'));
+    error_log("VIEW SCRIPT - Session ID: " . session_id());
     
     // Debug: Log session info
     error_log("VIEW SCRIPT - Session ID: " . session_id());
