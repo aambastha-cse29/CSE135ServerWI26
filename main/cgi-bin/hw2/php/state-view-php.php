@@ -1,8 +1,5 @@
 #!/usr/bin/php
 <?php
-   echo  "Cache-Control: no-cache\n";
-   echo  "Content-Type: text/html\n\n";
-
    session_set_cookie_params([
       'lifetime' => 86400,
       'path' => '/',
@@ -14,12 +11,12 @@
 
     session_start();
     
-    /*
+    
     if (!isset($_SESSION['Name'])) {
         header('Location: /state-collect-php.html', true, 302);
         exit;
     }
-    **/
+    
 
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
@@ -38,7 +35,7 @@
     echo "</ul>\n";
 
 
-    echo "<form method='POST' action='/cgi-bin/hw2/state/state-clear-php.cgi'>\n";
+    echo "<form method='POST' action='/cgi-bin/hw2/php/state-clear-php.cgi'>\n";
     echo "<button type='submit'>Clear Saved State</button>\n";
     echo "</form>\n";
 

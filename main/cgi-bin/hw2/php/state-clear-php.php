@@ -1,8 +1,5 @@
-#!/usr/lib/php
+#!/usr/bin/php
 <?php
-    echo  "Cache-Control: no-cache\n";
-    echo "Content-Type: text/html\n\n";
-    
     session_start();
 
     // Clear all session data
