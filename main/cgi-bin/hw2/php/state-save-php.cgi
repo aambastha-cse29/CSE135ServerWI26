@@ -1,33 +1,30 @@
-#!/usr/bin/php
+#!/usr/bin/php-cgi
 <?php
-// This CGI must not emit any body or raw headers before calling header().
- echo "Cache-Control: no-cache\n";
- echo "Content-Type: text/html\n\n";   // <-- TWO newlines
-
+// 1) Configure session cookie params BEFORE session_start AND before any output
 session_set_cookie_params([
   'lifetime' => 0,
   'path' => '/',
-  'domain' => '',
-  'secure' => true,
+  // 'domain' => 'cse135wi2026.site', // optional; usually omit to use host-only cookie
+  'secure' => true,      // requires https
   'httponly' => true,
   'samesite' => 'Lax'
 ]);
 
+// 2) Start / resume session BEFORE any output
 session_start();
 
-// Save POST data to session
+// 3) Now it’s safe to emit CGI headers
+echo "Cache-Control: no-cache\r\n";
+echo "Content-Type: text/html\r\n\r\n";
+
+// 4) Save POST data to session
 foreach ($_POST as $key => $value) {
   $_SESSION[$key] = $value;
 }
 
+// 5) Body
 echo "<!DOCTYPE html>\n";
-echo "<html>\n";
-echo "<head>\n";
-echo "<title>Save Data</title>\n";
-echo "</head>\n";
-echo "<body>\n";
-echo "Access Data Here: To <a href=\"/cgi-bin/hw2/php/state-view-php.php\">state-view-php.php</a>\n";
-echo "</body>\n";
-echo "</html>\n";
-
+echo "<html><head><title>Save Data</title></head><body>\n";
+echo "Access Data Here: <a href=\"/cgi-bin/hw2/php/state-view-php.cgi\">state-view-php.cgi</a>\n";
+echo "</body></html>\n";
 ?>
