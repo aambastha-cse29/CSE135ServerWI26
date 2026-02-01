@@ -1,4 +1,9 @@
+#!/usr/bin/php
 <?php   
+  
+  echo "Cache-Control: no-cache\n";
+  echo "Content-Type: text/html\n\n";
+  
   session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
@@ -17,6 +22,6 @@
 
 
   header("Location: /cgi-bin/hw2/php/state-view-php.php", true, 302);
-  
+
   exit;
 ?>
