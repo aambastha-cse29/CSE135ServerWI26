@@ -15,7 +15,7 @@ print("<title>Echo - Python</title>")
 print("</head>")
 print("<body>")
 print("<h1 align='center'>Echo - Python</h1><hr/>")
-print("<p>This Page Echoes Back The Data Sent To This CGI Script/p>")
+print("<p>This Page Echoes Back The Data Sent To This CGI Script</p>")
 
 # Print Key Headers
 print("<h2>Key Headers:</h2>")
