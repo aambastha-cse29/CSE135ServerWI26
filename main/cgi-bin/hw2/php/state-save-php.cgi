@@ -25,6 +25,6 @@ foreach ($_POST as $key => $value) {
 // 5) Body
 echo "<!DOCTYPE html>\n";
 echo "<html><head><title>Save Data</title></head><body>\n";
-echo "Access Data Here: <a href=\"/cgi-bin/hw2/php/state-view-php.php\">state-view-php.cgi</a>\n";
+echo 'Access Data Here: <a href="/cgi-bin/hw2/php/state-view-apache-php.php">state-view-apache-php.php</a>';
 echo "</body></html>\n";
 ?>
