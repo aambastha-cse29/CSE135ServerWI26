@@ -1,6 +1,7 @@
 #!/usr/bin/php
 <?php
-    // CRITICAL: Must match the save script's session path
+    
+    // Must match the save script's session path
     $session_path = '/tmp/php_sessions';
     if (!is_dir($session_path)) {
         mkdir($session_path, 0700, true);
@@ -16,7 +17,7 @@
       'samesite' => 'Lax'
     ]);
 
-    // CRITICAL FIX: Manually parse and set session ID from HTTP_COOKIE
+    // Manually parse and set session ID from HTTP_COOKIE
     if (isset($_SERVER['HTTP_COOKIE'])) {
         error_log("VIEW SCRIPT - HTTP_COOKIE: " . $_SERVER['HTTP_COOKIE']);
         
@@ -34,16 +35,10 @@
         // Set the session ID from the cookie if it exists
         if (isset($cookies['PHPSESSID'])) {
             session_id($cookies['PHPSESSID']);
-            error_log("VIEW SCRIPT - Setting session ID from cookie: " . $cookies['PHPSESSID']);
         }
     }
 
     session_start();
-    
-    // Debug: Log session info
-    error_log("VIEW SCRIPT - Session ID after start: " . session_id());
-    error_log("VIEW SCRIPT - Session path: " . session_save_path());
-    error_log("VIEW SCRIPT - Session data: " . print_r($_SESSION, true));
     
     if (!isset($_SESSION['Name']) || !isset($_SESSION['Favorite_CSE_Class']) || !isset($_SESSION['Graduation_Year'])) {
         error_log("VIEW SCRIPT - Name not set, redirecting");
@@ -55,10 +50,6 @@
         exit;
     }
     
-    // Helper function to safely output session data
-    function safe_output($key) {
-        return isset($_SESSION[$key]) ? htmlspecialchars($_SESSION[$key], ENT_QUOTES, 'UTF-8') : 'N/A';
-    }
 
     // Send CGI headers
     echo "Content-Type: text/html\r\n";
@@ -75,9 +66,9 @@
     echo "<p>This Page Displays The Data Saved In The Session By The State Save PHP CGI Script</p>\n";
     echo "<h2>Saved Data:</h2>\n";
     echo "<ul>\n";
-    echo "<li><strong>Name:</strong> " . safe_output('Name') . "</li>\n";
-    echo "<li><strong>Favorite CSE Class:</strong> " . safe_output('Favorite_CSE_Class') . "</li>\n";
-    echo "<li><strong>Graduation Year:</strong> " . safe_output('Graduation_Year') . "</li>\n";
+    echo "<li><strong>Name:</strong> " . $_SESSION['Name'] . "</li>\n";
+    echo "<li><strong>Favorite CSE Class:</strong> " . $_SESSION['Favorite_CSE_Class'] . "</li>\n";
+    echo "<li><strong>Graduation Year:</strong> " . $_SESSION['Graduation_Year'] . "</li>\n";
     echo "</ul>\n";
 
     echo "<form method='POST' action='/cgi-bin/hw2/php/state-clear-php.cgi'>\n";

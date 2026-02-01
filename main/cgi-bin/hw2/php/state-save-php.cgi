@@ -19,7 +19,7 @@ session_set_cookie_params([
 
 session_start();
 
-// CGI-specific: Parse POST data manually
+// Parse POST data manually
 $_POST = array();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $raw_post = file_get_contents('php://stdin');
@@ -33,16 +33,12 @@ if (!empty($_POST)) {
     }
 }
 
-// Debug
-error_log("SAVE SCRIPT - Session ID: " . session_id());
-error_log("SAVE SCRIPT - Session data after save: " . print_r($_SESSION, true));
-
-// CRITICAL: Manually send Set-Cookie header for CGI
+// Manually send Set-Cookie header for CGI
 $session_name = session_name();
 $session_id = session_id();
 $cookie_params = session_get_cookie_params();
 
-// Build the Set-Cookie header manually
+// Build the Set-Cookie header 
 $cookie_header = "$session_name=$session_id";
 $cookie_header .= "; Path=" . $cookie_params['path'];
 $cookie_header .= "; Max-Age=" . $cookie_params['lifetime'];
