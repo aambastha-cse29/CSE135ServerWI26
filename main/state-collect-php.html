@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-top: 20px;          
+            display: flex;
+            flex-direction: column;
+            align-items: center;       
+        }
+
+         label {
+           display: inline-block;
+           width: 100px;
+         }
+
+        input {
+           width: 200px;
+        }
+
+        button {
+           margin-top: 10px;
+           margin-right: 10px;
+      }
+       p {
+         margin: 0;
+        }   
+    </style>
+    <title>Collect Data State Management -- PHP</title>
+</head> 
+<body>
+    <h1>Data Collection For State Management -- PHP</h1>
+    <form method = "POST" action="/cgi-bin/hw2/php/state-save-php.cgi">
+        <label for ="Name:">Name:</label>
+        <input type="text" id="Name" name="Name">
+        <br><br>
+        <label for ="Favorite CSE Class:">Favorite CSE Class:</label>
+        <input type="text" id="Favorite CSE Class" name="Favorite CSE Class">
+        <br><br>
+        <label for ="Graduation Year:">Graduation Year:</label>
+        <input type="text" id="Graduation Year" name="Graduation Year">
+        <br><br>
+        
+        <button type="submit">Submit Data</button>
+    </form>
+    <br>
+    <p>Data Collection State Management PHP</p>
+</body>
+</html>
