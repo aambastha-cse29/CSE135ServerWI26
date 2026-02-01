@@ -44,6 +44,7 @@
     
     if (!isset($_SESSION['Name'])) {
         // CGI-style redirect header
+        echo "Set-Cookie: $cookie_header\r\n";
         echo "Content-Type: text/html\r\n"
         echo "Status: 302 Found\r\n";
         echo "Location: /state-collect-php.html\r\n";
