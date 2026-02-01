@@ -11,8 +11,8 @@
     echo "</head>\n";
 
     echo "<body>\n";
-    echo "<h1 align='center'>Hello HTML World -- Greetings From Aman Ambastha</h1><hr/>\n"
-    echo "<p> Hello World</p>\n";
+    echo "<h1 align='center'>Hello HTML World -- Greetings From Aman Ambastha</h1><hr/>\n";
+    echo "<p>Hello World</p>\n";
     echo "<p>This Page Was Generated With The PHP Programming Language</p>\n";
 
     $today = new DateTime();
