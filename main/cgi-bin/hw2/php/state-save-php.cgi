@@ -41,6 +41,7 @@ $cookie_params = session_get_cookie_params();
 $cookie_header = "$session_name=$session_id";
 $cookie_header .= "; Path=" . $cookie_params['path'];
 $cookie_header .= "; Max-Age=" . $cookie_params['lifetime'];
+
 if ($cookie_params['secure']) {
     $cookie_header .= "; Secure";
 }
@@ -59,7 +60,7 @@ echo "\r\n";
 // HTML output
 echo "<!DOCTYPE html>\n";
 echo "<html><head><title>Save Data</title></head><body>\n";
-echo "<p>Data saved to session!</p>\n";
-echo '<p>Access Data Here: <a href="/cgi-bin/hw2/php/state-view-php.php">Access Data</a></p>';
+echo "<p>Data Saved To Session!</p>\n";
+echo '<p>Access Data Here: <a href="/cgi-bin/hw2/php/state-view-php.cgi">Access Data</a></p>';
 echo "</body></html>\n";
 ?>
