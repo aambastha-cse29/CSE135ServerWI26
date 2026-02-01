@@ -36,7 +36,7 @@ if (!empty($_POST)) {
 
 // IMPORTANT: Headers must come AFTER session_start() but session cookie is already sent
 // Just send the content type
-header("Content-Type: text/html");
+echo "Content-Type: text/html\n\n";
 
 echo "<!DOCTYPE html>\n";
 echo "<html><head><title>Save Data</title></head><body>\n";
