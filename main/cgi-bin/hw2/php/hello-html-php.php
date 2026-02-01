@@ -4,6 +4,7 @@
 
     header("Cache-Control: no-cache\r\n");
     header("Content-Type: text/html\r\n\r\n");
+    echo  "PHP_SAPI: " . php_sapi_name() . "\n";
 
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
