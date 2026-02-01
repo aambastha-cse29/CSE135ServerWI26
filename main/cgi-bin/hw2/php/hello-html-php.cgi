@@ -1,4 +1,4 @@
-#!/usr/bin/php-cgi
+#!/usr/bin/php
 <?php
     // Required CGI headers
     echo "Cache-Control: no-cache\n";
@@ -17,7 +17,7 @@
     echo "<p>This Page Was Generated With The PHP Programming Language</p>\n";
 
     $today = new DateTime();
-    $IP = $_SERVER['REMOTE_ADDR'];
+    $IP = $_SERVER['HTTP_USER_AGENT'];
 
     echo "<p>Page Generated At (UTC): " . $today->format('Y-m-d H:i:s') . "</p>\n";
     echo "<p>Your IP Address Is: " . $IP . "</p>\n";
