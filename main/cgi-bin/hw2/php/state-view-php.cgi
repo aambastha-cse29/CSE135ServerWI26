@@ -16,15 +16,32 @@
       'samesite' => 'Lax'
     ]);
 
-    session_start();
+    // CRITICAL FIX: Manually parse and set session ID from HTTP_COOKIE
+    if (isset($_SERVER['HTTP_COOKIE'])) {
+        error_log("VIEW SCRIPT - HTTP_COOKIE: " . $_SERVER['HTTP_COOKIE']);
+        
+        // Parse the cookie manually
+        $cookies = array();
+        $cookie_parts = explode(';', $_SERVER['HTTP_COOKIE']);
+        foreach ($cookie_parts as $cookie) {
+            $cookie = trim($cookie);
+            if (strpos($cookie, '=') !== false) {
+                list($name, $value) = explode('=', $cookie, 2);
+                $cookies[trim($name)] = trim($value);
+            }
+        }
+        
+        // Set the session ID from the cookie if it exists
+        if (isset($cookies['PHPSESSID'])) {
+            session_id($cookies['PHPSESSID']);
+            error_log("VIEW SCRIPT - Setting session ID from cookie: " . $cookies['PHPSESSID']);
+        }
+    }
 
-    // Debug cookie information
-    error_log("VIEW SCRIPT - COOKIE array: " . print_r($_COOKIE, true));
-    error_log("VIEW SCRIPT - HTTP_COOKIE: " . ($_SERVER['HTTP_COOKIE'] ?? 'NOT SET'));
-    error_log("VIEW SCRIPT - Session ID: " . session_id());
+    session_start();
     
     // Debug: Log session info
-    error_log("VIEW SCRIPT - Session ID: " . session_id());
+    error_log("VIEW SCRIPT - Session ID after start: " . session_id());
     error_log("VIEW SCRIPT - Session path: " . session_save_path());
     error_log("VIEW SCRIPT - Session data: " . print_r($_SESSION, true));
     
