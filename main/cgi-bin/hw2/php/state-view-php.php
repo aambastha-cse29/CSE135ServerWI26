@@ -1,5 +1,5 @@
 <?php
-    // Set custom session save path for CGI compatibility
+    // CRITICAL: Must match the save script's session path
     $session_path = '/tmp/php_sessions';
     if (!is_dir($session_path)) {
         mkdir($session_path, 0700, true);
@@ -17,7 +17,13 @@
 
     session_start();
     
+    // Debug: Log session info
+    error_log("VIEW SCRIPT - Session ID: " . session_id());
+    error_log("VIEW SCRIPT - Session path: " . session_save_path());
+    error_log("VIEW SCRIPT - Session data: " . print_r($_SESSION, true));
+    
     if (!isset($_SESSION['Name'])) {
+        error_log("VIEW SCRIPT - Name not set, redirecting");
         header('Location: /state-collect-php.html', true, 302);
         exit;
     }
