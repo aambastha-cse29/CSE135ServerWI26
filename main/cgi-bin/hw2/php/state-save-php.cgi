@@ -1,31 +1,37 @@
 #!/usr/bin/php
 <?php
-// 1) Configure session cookie params BEFORE session_start AND before any output
+// 1) Set a custom session save path with proper permissions
+$session_path = '/tmp/php_sessions';
+if (!is_dir($session_path)) {
+    mkdir($session_path, 0700, true);
+}
+session_save_path($session_path);
+
+// 2) Configure session cookie params BEFORE session_start
 session_set_cookie_params([
   'lifetime' => 0,
   'path' => '/',
-  // 'domain' => 'cse135wi2026.site', // optional; usually omit to use host-only cookie
-  'secure' => true,      // requires https
+  'secure' => true,
   'httponly' => true,
   'samesite' => 'Lax'
 ]);
 
-// 2) Start / resume session BEFORE any output
+// 3) Start session BEFORE any output
 session_start();
 
-// 3) Now it’s safe to emit CGI headers
+// 4) Now emit CGI headers (session_start already sent Set-Cookie header)
 echo "Cache-Control: no-cache\r\n";
 echo "Content-Type: text/html\r\n\r\n";
 
-// 4) Save POST data to session
+// 5) Save POST data to session
 foreach ($_POST as $key => $value) {
-  $_SESSION[$key] = $value;
+  $_SESSION[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
 
-// 5) Body
+// 6) Body
 echo "<!DOCTYPE html>\n";
 echo "<html><head><title>Save Data</title></head><body>\n";
-echo 'Access Data Here: <a href="/cgi-bin/hw2/php/state-view-php.php">state-view-php.php</a>';
+echo "<p>Data saved to session!</p>\n";
+echo '<p>Access Data Here: <a href="/cgi-bin/hw2/php/state-view-php.php">state-view-php.php</a></p>';
 echo "</body></html>\n";
-
 ?>
