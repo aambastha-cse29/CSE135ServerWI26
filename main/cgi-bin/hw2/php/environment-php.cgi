@@ -15,14 +15,14 @@
     echo "<table border='1'>\n";
     echo "<tr><th>Variable Name</th><th>Value</th></tr>\n";
 
-   foreach ($_SERVER as $key => $value) {
-         echo "<tr><td>" . htmlspecialchars($key) . "</td><td>" . htmlspecialchars($value) . "</td></tr>\n";
-   }
-
-   echo "</table>\n";
-   echo "<p>Using The Common Gateway Interface (CGI) Protocol - CSE 135 Team Aman Ambastha</p>\n";
-   echo "</body>\n";
-   echo "</html>\n";
+    foreach (getenv() as $key => $value) {
+       echo "<tr><td>" . htmlspecialchars($key) . "</td><td>" . htmlspecialchars($value) . "</td></tr>\n";
+    }
+    
+    echo "</table>\n";
+    echo "<p>Using The Common Gateway Interface (CGI) Protocol - CSE 135 Team Aman Ambastha</p>\n";
+    echo "</body>\n";
+    echo "</html>\n";
     
 ?>
 
