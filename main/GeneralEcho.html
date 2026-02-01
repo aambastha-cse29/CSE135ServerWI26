@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-top: 20px;          
+            display: flex;
+            flex-direction: column;
+            align-items: center;       
+        }
+
+         label {
+           display: inline-block;
+           width: 100px;
+         }
+
+        input {
+           width: 200px;
+        }
+
+        button {
+           margin-top: 10px;
+           margin-right: 10px;
+      }
+       p {
+         margin: 0;
+        }   
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.querySelector("form");
+            form.addEventListener("submit", function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                const method = document.getElementById("method").value;
+                const endpoint = document.getElementById("endpoint").value;
+                const contentType = document.getElementById("contentType").value;
+
+                let url = "";
+                if (endpoint === "python") {
+                    url = "/cgi-bin/hw2/python/echo-python.py";
+                } else if (endpoint === "php") {
+                    url = "/cgi-bin/hw2/php/echo-php.cgi";
+                } else if (endpoint === "cpp") {
+                    url = "/cgi-bin/hw2/cpp/echo-cplusplus.cgi";
+                }
+
+                const data = {
+                    Name: document.getElementById("Name").value,
+                    Age: document.getElementById("Age").value,
+                    City: document.getElementById("City").value
+                };
+
+                let fetchOptions = { method, headers: {} };
+
+                if (method === "GET" || method === "DELETE") {
+                   const params = new URLSearchParams(data).toString();
+                   url += "?" + params;
+
+                    // Ensure no body + no content-type
+                   delete fetchOptions.headers["Content-Type"];
+                   delete fetchOptions.body;
+                } 
+                
+                else {
+                  if (contentType === "application/json") {
+                       fetchOptions.headers["Content-Type"] = "application/json";
+                       fetchOptions.body = JSON.stringify(data);
+                    } 
+                  else {
+                       fetchOptions.headers["Content-Type"] = "application/x-www-form-urlencoded";
+                       fetchOptions.body = new URLSearchParams(data).toString();
+                     }
+               }
+               fetch(url, fetchOptions)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.open();
+                        document.write(html);
+                        document.close();
+                    })
+                    .catch(error => console.error("Error:", error));
+           });
+       });
+    </script>
+    <title>General Echo</title>
+</head> 
+<body>
+    <h1>General Echo</h1>
+    <form>
+        <label for ="method:">HTTP Method:</label>
+        <select name="method" id="method">
+            <option value="POST">POST</option>
+            <option value="GET">GET</option>
+            <option value="PUT">PUT</option>
+            <option value="DELETE">DELETE</option>
+        </select>
+        <br><br>
+        <label for ="endpoint:">Endpoint:</label>
+        <select name="endpoint" id="endpoint">
+            <option value="python">Python</option>
+            <option value="php">PHP</option>
+            <option value="cpp">C++</option>
+        </select>
+        <br><br>
+        <label for ="contentType:">Content Type:</label>
+        <select name="contentType" id="contentType">
+            <option value="x-www-form-urlencoded">x-www-form-urlencoded</option>
+            <option value="application/json">application/json</option>
+        </select>
+        <br><br>
+        <label for ="Name:">Name:</label>
+        <input type="text" id="Name" name="Name">
+        <br><br>
+        <label for ="Age:">Age:</label>
+        <input type="text" id="Age" name="Age">
+        <br><br>
+        <label for ="City:">City Of Birth:</label>
+        <input type="text" id="City" name="City">
+        <br><br>
+        
+        <button  type="submit">Submit</button>
+    </form>
+    <br>
+    <br>
+    <p>This Is A Dynamic HTML Form With JS That Supports Multiple HTTP Methods, Endpoints, And Content Types.</p>
+</body>
+</html>
