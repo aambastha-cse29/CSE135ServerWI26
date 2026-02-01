@@ -13,14 +13,13 @@
     ]);
 
     session_start();
-
+    
+    /*
     if (!isset($_SESSION['Name'])) {
-        header('Location: /var/www/public_html/state-collect-php.html', true, 302);
+        header('Location: /state-collect-php.html', true, 302);
         exit;
     }
-
-    echo "Cache-Control: no-cache\n";
-    echo "Content-Type: text/html\n\n";
+    **/
 
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
