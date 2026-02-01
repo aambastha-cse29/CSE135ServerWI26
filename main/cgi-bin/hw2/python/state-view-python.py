@@ -28,7 +28,7 @@ if session_id:
 # Redirect if no data found
 if not data or "Name" not in data:
     print("Status: 302 Found")
-    print("Location: /state-collect-php.html")
+    print("Location: /state-collect-python.html")
     print()
     exit()
 
@@ -46,8 +46,8 @@ print("<p>This Page Displays The Data Saved In The Session By The State Save Pyt
 print("<h2>Saved Data:</h2>")
 print("<ul>")
 print(f"<li><strong>Name:</strong> {data.get('Name', 'N/A')}</li>")
-print(f"<li><strong>Favorite CSE Class:</strong> {data.get('Favorite_CSE_Class', 'N/A')}</li>")
-print(f"<li><strong>Graduation Year:</strong> {data.get('Graduation_Year', 'N/A')}</li>")
+print(f"<li><strong>University:</strong> {data.get('University', 'N/A')}</li>")
+print(f"<li><strong>Department:</strong> {data.get('Department', 'N/A')}</li>")
 print("</ul>")
 print("<form method='POST' action='/cgi-bin/hw2/python/state-clear-python.py'>")
 print("<button type='submit'>Clear Saved State</button>")
