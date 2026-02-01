@@ -1,5 +1,8 @@
 #!/usr/lib/php
 <?php
+    echo  "Cache-Control: no-cache\n";
+    echo "Content-Type: text/html\n\n";
+    
     session_start();
 
     // Clear all session data
@@ -19,6 +22,6 @@
 
     // Destroy the session
     session_destroy();
-    header('Location: /var/www/public_html/state-collect-php.html', true, 302);
+    header('Location: /state-collect-php.html', true, 302);
     exit;
 ?>

@@ -19,6 +19,6 @@
         $_SESSION[$key] = $value;
     }
 
-    header("Location: /state-view-php.cgi", true, 302);
+    header("Location: /cgi-bin/hw2/php/state-view-php.cgi", true, 302);
     exit;
 ?>

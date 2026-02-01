@@ -14,7 +14,7 @@
 
     session_start();
 
-    if (!isset($_SESSION['Name']) || !isset($_SESSION['Favorite CSE Class']) || !isset($_SESSION['Graduation Year'])) {
+    if (!isset($_SESSION['Name'])) {
         header('Location: /var/www/public_html/state-collect-php.html', true, 302);
         exit;
     }
