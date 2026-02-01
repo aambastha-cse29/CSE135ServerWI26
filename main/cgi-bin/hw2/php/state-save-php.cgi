@@ -1,6 +1,12 @@
 #!/usr/bin/php
 <?php
 
+$session_path = '/tmp/php_sessions';
+if (!is_dir($session_path)) {
+    mkdir($session_path, 0700, true);
+}
+session_save_path($session_path);
+
 session_set_cookie_params([
   'lifetime' => 86400,
   'path' => '/',
