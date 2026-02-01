@@ -16,7 +16,7 @@
     echo "<p>This Page Was Generated With The PHP Programming Language</p>\n";
 
     $today = new DateTime();
-    $IP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+    $IP = $_SERVER['GATEWAY_INTERFACE'] ?? 'Unknown';
 
     echo "<p>Page Generated At (UTC): " . $today->format('Y-m-d H:i:s') . "</p>\n";
     echo "<p>Your IP Address Is: " . $IP . "</p>\n";
