@@ -15,7 +15,7 @@ print("<title>Echo - Python</title>")
 print("</head>")
 print("<body>")
 print("<h1 align='center'>Echo - Python</h1><hr/>")
-print("<p>This Page Echoes Back The Data Sent To This CGI Script Using The GET Method</p>")
+print("<p>This Page Echoes Back The Data Sent To This CGI Script/p>")
 
 # Print Key Headers
 print("<h2>Key Headers:</h2>")
@@ -38,7 +38,6 @@ query_string = os.environ.get('QUERY_STRING')
 if query_string:
     # Parse the query string into key-value pairs
     params = query_string.split('&')
-    print("<h2>Received Data:</h2>")
     print("<ul>")
     for param in params:
         key_value = param.split('=')
