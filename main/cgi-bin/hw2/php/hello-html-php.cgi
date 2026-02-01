@@ -2,7 +2,7 @@
 <?php
     header("Cache-Control: no-cache");
     header("Content-Type: text/html");
-    echo "\r\n"
+    echo "\r\n";
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "<head>\n";
