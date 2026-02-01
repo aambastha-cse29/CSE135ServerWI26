@@ -7,11 +7,11 @@ if (!is_dir($session_path)) {
 }
 session_save_path($session_path);
 
-// Configure session cookie - make sure path is '/'
+// Configure session cookie
 session_set_cookie_params([
   'lifetime' => 86400,
-  'path' => '/',           // Cookie valid for entire site
-  'domain' => '',          // Leave empty for current domain
+  'path' => '/',
+  'domain' => '',
   'secure' => true,
   'httponly' => true,
   'samesite' => 'Lax'
@@ -19,10 +19,22 @@ session_set_cookie_params([
 
 session_start();
 
+// CGI-specific: Parse POST data manually
+$_POST = array();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Read raw POST data
+    $raw_post = file_get_contents('php://stdin');
+    error_log("SAVE SCRIPT - Raw POST: " . $raw_post);
+    
+    // Parse URL-encoded data
+    parse_str($raw_post, $_POST);
+}
+
 // Debug logs
 error_log("SAVE SCRIPT - Session ID: " . session_id());
 error_log("SAVE SCRIPT - POST data: " . print_r($_POST, true));
-error_log("SAVE SCRIPT - Cookie params: " . print_r(session_get_cookie_params(), true));
+error_log("SAVE SCRIPT - REQUEST_METHOD: " . $_SERVER['REQUEST_METHOD']);
+error_log("SAVE SCRIPT - CONTENT_TYPE: " . ($_SERVER['CONTENT_TYPE'] ?? 'not set'));
 
 // Save POST data
 if (!empty($_POST)) {
@@ -34,14 +46,14 @@ if (!empty($_POST)) {
     error_log("SAVE SCRIPT - WARNING: POST is empty!");
 }
 
-// IMPORTANT: Headers must come AFTER session_start() but session cookie is already sent
-// Just send the content type
+// Send headers
 echo "Content-Type: text/html\n\n";
 
 echo "<!DOCTYPE html>\n";
 echo "<html><head><title>Save Data</title></head><body>\n";
 echo "<p>Data saved to session!</p>\n";
 echo "<p>Session ID: " . session_id() . "</p>\n";
+echo "<p>POST data received: " . (empty($_POST) ? "NONE" : count($_POST) . " fields") . "</p>\n";
 echo '<p>Access Data Here: <a href="/cgi-bin/hw2/php/state-view-php.php">state-view-php.php</a></p>';
 echo "</body></html>\n";
 ?>
