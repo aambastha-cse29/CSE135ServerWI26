@@ -11,7 +11,7 @@
     session_start();
     
     
-    if (!isset($_SESSION['Name'])) {
+    if (isset($_SESSION['Name'])) {
         header('Location: /state-collect-php.html', true, 302);
         exit;
     }

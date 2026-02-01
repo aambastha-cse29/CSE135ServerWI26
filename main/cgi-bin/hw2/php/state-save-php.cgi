@@ -27,4 +27,5 @@ echo "<!DOCTYPE html>\n";
 echo "<html><head><title>Save Data</title></head><body>\n";
 echo 'Access Data Here: <a href="/cgi-bin/hw2/php/state-view-php.php">state-view-php.php</a>';
 echo "</body></html>\n";
+
 ?>
