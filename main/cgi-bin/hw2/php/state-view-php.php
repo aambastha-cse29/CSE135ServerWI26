@@ -35,7 +35,7 @@
     echo "</ul>\n";
 
 
-    echo "<form method='POST' action='/cgi-bin/hw2/php/state-clear-php.cgi'>\n";
+    echo "<form method='POST' action='/cgi-bin/hw2/php/state-clear-php.php'>\n";
     echo "<button type='submit'>Clear Saved State</button>\n";
     echo "</form>\n";
 
