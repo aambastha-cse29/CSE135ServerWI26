@@ -17,6 +17,30 @@
     ]);
 
     session_start();
+
+    // Manually send Set-Cookie header for CGI
+    $session_name = session_name();
+    $session_id = session_id();
+    $cookie_params = session_get_cookie_params();
+
+    // Build the Set-Cookie header manually
+    $cookie_header = "$session_name=$session_id";
+    $cookie_header .= "; Path=" . $cookie_params['path'];
+    $cookie_header .= "; Max-Age=" . $cookie_params['lifetime'];
+
+    if ($cookie_params['secure']) {
+       $cookie_header .= "; Secure";
+    
+   }
+
+    if ($cookie_params['httponly']) {
+       $cookie_header .= "; HttpOnly";
+    
+   }
+
+    if ($cookie_params['samesite']) {
+       $cookie_header .= "; SameSite=" . $cookie_params['samesite'];
+   }
     
     if (!isset($_SESSION['Name'])) {
         // CGI-style redirect header
@@ -28,6 +52,7 @@
     }
 
     // Send CGI headers
+    echo "Set-Cookie: $cookie_header\r\n"
     echo "Content-Type: text/html\r\n";
     echo "\r\n";
 
