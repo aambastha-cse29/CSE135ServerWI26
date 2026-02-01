@@ -53,13 +53,10 @@ else:
 # Message Body
 print("<h2>Message Body:</h2>")
 content_length = os.environ.get('CONTENT_LENGTH')
-if content_length:
-    try:
-        length = int(content_length)
-        message_body = sys.stdin.read(length)
-        print("<pre>{}</pre>".format(message_body))
-    except ValueError:
-        print("<p>No Message Body Received.</p>")
+if content_length and int(content_length) > 0:
+    length = int(content_length)
+    message_body = sys.stdin.read(length)
+    print("<pre>{}</pre>".format(message_body))
 else:
     print("<p>No Message Body Received.</p>")
 
