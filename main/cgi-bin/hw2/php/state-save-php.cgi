@@ -19,7 +19,7 @@ session_set_cookie_params([
 
 
 $cookie = array();
-$http_cookie = $_SERVER['HTTP_COOKIE']
+$http_cookie = $_SERVER['HTTP_COOKIE'];
 if ($http_cookie) {
      foreach ($cookie_parts as $cookie) {
         $cookie = trim($cookie);
