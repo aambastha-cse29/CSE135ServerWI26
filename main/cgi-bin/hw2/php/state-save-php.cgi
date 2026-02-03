@@ -97,10 +97,21 @@ echo "\r\n";
 // HTML output
 echo "<!DOCTYPE html>\n";
 echo "<html>\n";
-echo "<head><title>Data Saved</title></head>\n";
+echo "<head>\n";
+echo "  <meta charset='UTF-8'>\n";
+echo "  <meta name='viewport' content='width=device-width, initial-scale=1.0'>\n";
+echo "  <title>Data Saved</title>\n";
+echo "  <style>\n";
+echo "    body { font-family: Arial, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; text-align: center; }\n";
+echo "    h2 { color: #28a745; }\n";
+echo "    a { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; }\n";
+echo "    a:hover { background: #0056b3; }\n";
+echo "  </style>\n";
+echo "</head>\n";
 echo "<body>\n";
-echo "  <h2>Data saved successfully!</h2>\n";
-echo "  <p><a href='/cgi-bin/hw2/php/state-view-php.cgi'>View Saved Data</a></p>\n";
+echo "  <h2>✓ Data saved successfully!</h2>\n";
+echo "  <p>Your information has been stored in the session.</p>\n";
+echo "  <a href='/cgi-bin/hw2/php/state-view-php.cgi'>View Saved Data</a>\n";
 echo "</body>\n";
 echo "</html>\n";
 ?>
