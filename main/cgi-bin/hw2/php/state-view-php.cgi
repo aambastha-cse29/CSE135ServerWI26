@@ -48,7 +48,7 @@
         echo "\r\n";
         exit;
     }
-    
+
     // Send CGI headers
     echo "Content-Type: text/html\r\n";
     echo "\r\n";
@@ -56,23 +56,33 @@
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "<head>\n";
-    echo "<title>View Saved State - PHP</title>\n";
+    echo "  <meta charset='UTF-8'>\n";
+    echo "  <meta name='viewport' content='width=device-width, initial-scale=1.0'>\n";
+    echo "  <title>View Saved State - PHP</title>\n";
+    echo "  <style>\n";
+    echo "    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }\n";
+    echo "    h1 { color: #333; text-align: center; border-bottom: 3px solid #007bff; padding-bottom: 10px; }\n";
+    echo "    h2 { color: #555; margin-top: 30px; }\n";
+    echo "    ul { background: #f8f9fa; padding: 20px 40px; border-left: 4px solid #28a745; list-style: none; }\n";
+    echo "    li { padding: 8px 0; border-bottom: 1px solid #dee2e6; }\n";
+    echo "    li:last-child { border-bottom: none; }\n";
+    echo "    strong { color: #007bff; }\n";
+    echo "    button { margin-top: 20px; padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }\n";
+    echo "    button:hover { background: #c82333; }\n";
+    echo "  </style>\n";
     echo "</head>\n";
-
     echo "<body>\n";
-    echo "<h1 align='center'>View Saved State - PHP</h1><hr/>\n";
-    echo "<p>This Page Displays The Data Saved In The Session By The State Save PHP CGI Script</p>\n";
-    echo "<h2>Saved Data:</h2>\n";
-    echo "<ul>\n";
-    echo "<li><strong>Name:</strong> " . $_SESSION['Name'] . "</li>\n";
-    echo "<li><strong>Favorite CSE Class:</strong> " . $_SESSION['Favorite_CSE_Class'] . "</li>\n";
-    echo "<li><strong>Graduation Year:</strong> " . $_SESSION['Graduation_Year'] . "</li>\n";
-    echo "</ul>\n";
-
-    echo "<form method='POST' action='/cgi-bin/hw2/php/state-clear-php.cgi'>\n";
-    echo "<button type='submit'>Clear Saved State</button>\n";
-    echo "</form>\n";
-
+    echo "  <h1>View Saved State - PHP</h1>\n";
+    echo "  <p>This page displays the data saved in the session by the State Save PHP CGI Script</p>\n";
+    echo "  <h2>Saved Data:</h2>\n";
+    echo "  <ul>\n";
+    echo "    <li><strong>Name:</strong> " . htmlspecialchars($_SESSION['Name']) . "</li>\n";
+    echo "    <li><strong>Favorite CSE Class:</strong> " . htmlspecialchars($_SESSION['Favorite_CSE_Class']) . "</li>\n";
+    echo "    <li><strong>Graduation Year:</strong> " . htmlspecialchars($_SESSION['Graduation_Year']) . "</li>\n";
+    echo "  </ul>\n";
+    echo "  <form method='POST' action='/cgi-bin/hw2/php/state-clear-php.cgi'>\n";
+    echo "    <button type='submit'>Clear Saved State</button>\n";
+    echo "  </form>\n";
     echo "</body>\n";
     echo "</html>\n";
 ?>
