@@ -33,7 +33,7 @@ if ($http_cookie) {
 
 // Parse POST data manually
 $_POST = array();
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $raw_post = file_get_contents('php://stdin');
     parse_str($raw_post, $_POST);
 }
@@ -100,7 +100,7 @@ echo "<html>\n";
 echo "<head>\n";
 echo "  <meta charset='UTF-8'>\n";
 echo "  <meta name='viewport' content='width=device-width, initial-scale=1.0'>\n";
-echo "  <title>Data Saved</title>\n";
+echo "  <title>Data Saved -- PHP</title>\n";
 echo "  <style>\n";
 echo "    body { font-family: Arial, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; text-align: center; }\n";
 echo "    h2 { color: #28a745; }\n";
@@ -109,8 +109,8 @@ echo "    a:hover { background: #0056b3; }\n";
 echo "  </style>\n";
 echo "</head>\n";
 echo "<body>\n";
-echo "  <h2>✓ Data saved successfully!</h2>\n";
-echo "  <p>Your information has been stored in the session.</p>\n";
+echo "  <h2>✓ Data Saved Successfully -- PHP!</h2>\n";
+echo "  <p>Your Information Has Been Stored In The Session</p>\n";
 echo "  <a href='/cgi-bin/hw2/php/state-view-php.cgi'>View Saved Data</a>\n";
 echo "</body>\n";
 echo "</html>\n";

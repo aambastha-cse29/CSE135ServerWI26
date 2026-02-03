@@ -58,7 +58,7 @@
     echo "<head>\n";
     echo "  <meta charset='UTF-8'>\n";
     echo "  <meta name='viewport' content='width=device-width, initial-scale=1.0'>\n";
-    echo "  <title>View Saved State - PHP</title>\n";
+    echo "  <title>View Saved State -- PHP</title>\n";
     echo "  <style>\n";
     echo "    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }\n";
     echo "    h1 { color: #333; text-align: center; border-bottom: 3px solid #007bff; padding-bottom: 10px; }\n";
@@ -72,8 +72,8 @@
     echo "  </style>\n";
     echo "</head>\n";
     echo "<body>\n";
-    echo "  <h1>View Saved State - PHP</h1>\n";
-    echo "  <p>This page displays the data saved in the session by the State Save PHP CGI Script</p>\n";
+    echo "  <h1>View Saved State -- PHP</h1>\n";
+    echo "  <p>This Page Displays The Data Saved In The Session By The State Save PHP CGI Script</p>\n";
     echo "  <h2>Saved Data:</h2>\n";
     echo "  <ul>\n";
     echo "    <li><strong>Name:</strong> " . htmlspecialchars($_SESSION['Name']) . "</li>\n";
