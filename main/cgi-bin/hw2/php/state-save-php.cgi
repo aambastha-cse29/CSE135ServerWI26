@@ -56,7 +56,7 @@ if (empty($_POST)) {
 
 
 if (isset($cookies['PHPSESSID']) && !empty($cookies['PHPSESSID'])) {
-   session_id($cookies['PHPSESSID'])
+   session_id($cookies['PHPSESSID']);
 }
 
 session_start();
