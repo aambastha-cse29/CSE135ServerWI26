@@ -1,6 +1,5 @@
 #!/usr/bin/php
 <?php
-    
     // Must match the save script's session path
     $session_path = '/tmp/php_sessions';
     if (!is_dir($session_path)) {
@@ -50,7 +49,6 @@
         exit;
     }
     
-
     // Send CGI headers
     echo "Content-Type: text/html\r\n";
     echo "\r\n";

@@ -17,7 +17,18 @@ session_set_cookie_params([
   'samesite' => 'Lax'
 ]);
 
-session_start();
+
+$cookie = array();
+$http_cookie = $_SERVER['HTTP_COOKIE']
+if ($http_cookie) {
+     foreach ($cookie_parts as $cookie) {
+        $cookie = trim($cookie);
+        if (strpos($cookie, '=') !== false) {
+              list($name, $value) = explode('=', $cookie, 2);
+               $cookies[trim($name)] = trim($value);
+            }
+     }
+}
 
 // Parse POST data manually
 $_POST = array();
@@ -25,6 +36,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $raw_post = file_get_contents('php://stdin');
     parse_str($raw_post, $_POST);
 }
+
+if (empty($_POST)) {
+    if (isset($cookies['PHPSESSID']) && !empty($cookies['PHPSESSID'])) {
+        // Has valid cookie but no POST data → redirect to view
+        echo "Status: 302 Found\r\n";
+        echo "Location: /cgi-bin/hw2/php/state-view-php.cgi\r\n";
+        echo "\r\n";
+    } 
+    
+    else {
+        // No cookie and no POST data → redirect to form
+        echo "Status: 302 Found\r\n";
+        echo "Location: /state-collect-php.html\r\n";
+        echo "\r\n";
+    }
+    exit;
+}
+
+
+if (isset($cookies['PHPSESSID']) && !empty($cookies['PHPSESSID'])) {
+   session_id($cookies['PHPSESSID'])
+}
+
+session_start();
 
 // Save POST data
 if (!empty($_POST)) {
@@ -42,6 +77,7 @@ $cookie_params = session_get_cookie_params();
 $cookie_header = "$session_name=$session_id";
 $cookie_header .= "; Path=" . $cookie_params['path'];
 $cookie_header .= "; Max-Age=" . $cookie_params['lifetime'];
+
 if ($cookie_params['secure']) {
     $cookie_header .= "; Secure";
 }
