@@ -35,4 +35,9 @@ jobs:
         run: |
           rsync -az --delete ./reporting/ \
             "${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_HOST }}:/var/www/reporting.cse135wi2026.site/public_html/"
+            
+      - name: Deploy test site
+        run: |
+          rsync -az --delete ./test/ \
+            "${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_HOST }}:/var/www/test.cse135wi2026.site/public_html/"
 
