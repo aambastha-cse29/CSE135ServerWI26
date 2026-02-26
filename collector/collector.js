@@ -111,7 +111,8 @@ async function sendType(type, payload) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: json,
-      keepalive: true
+      keepalive: true,
+      credentials: "omit"
     }).catch(() => {});
   }
 }

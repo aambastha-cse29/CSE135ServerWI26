@@ -5,6 +5,8 @@ require_once __DIR__ . "/validate.php";
 header("Access-Control-Allow-Origin: https://test.cse135wi2026.site");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Expose-Headers: X-CSE135-SID");
+header("Access-Control-Allow-Credentials: true");
 header("Vary: Origin");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
