@@ -325,6 +325,8 @@ async function collectPerformanceData() {
     if (!nav) return {};
 
     const ttfb = (nav.requestStart && nav.requestStart > 0) ? (nav.responseStart - nav.requestStart) : (nav.responseStart - nav.fetchStart);
+    const timingObj = nav.toJSON() ? nav.toJSON() : { ...nav };
+    delete timingObj.nextHopProtocol;
 
     const performanceData = {
         "dnslookupTime": nav.domainLookupEnd - nav.domainLookupStart,
@@ -334,7 +336,7 @@ async function collectPerformanceData() {
         "pageLoadStart": nav.fetchStart,
         "pageLoadEnd": nav.loadEventEnd,
         "pageLoadTime": nav.loadEventEnd - nav.fetchStart,
-        "timingObject": nav.toJSON() ? nav.toJSON() : { ...nav }
+        "timingObject": timingObj
     };
 
     return performanceData;
