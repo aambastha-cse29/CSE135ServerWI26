@@ -366,7 +366,7 @@ function validate_activity_payload($p): ?array {
 
       $key = v_str($entry['key'] ?? null, 64);
       // Enforce sanitization contract: single-char values must be exactly "CHAR"
-      if ($key !== null && mb_strlen($key) === 1 && $key !== 'CHAR') {
+      if ($key !== null && strlen($key) === 1 && $key !== 'CHAR') {
         $key = 'CHAR'; // re-sanitize if client missed it
       }
 
