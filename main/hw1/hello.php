@@ -7,9 +7,5 @@
 </head>
 <body>
     <h1>PHP Lives!</h1>
-    <?php
-      phpinfo();
-     ?>
-    
 </body>
 </html>
