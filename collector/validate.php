@@ -172,7 +172,7 @@ function validate_performance_payload($p): ?array {
       'domInteractive','domContentLoadedEventStart','domContentLoadedEventEnd',
       'domComplete','loadEventStart','loadEventEnd',
       'transferSize','encodedBodySize','decodedBodySize',
-      'nextHopProtocol','workerStart','redirectStart','redirectEnd'
+      ,'workerStart','redirectStart','redirectEnd'
     ];
 
     $cleanTiming = [];
