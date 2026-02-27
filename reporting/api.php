@@ -116,7 +116,18 @@ function sessionsFunction(PDO $pdo, string $method, ?int $id): void {
         if ($ip_bin !== null) $stmt->bindValue(':ip', $ip_bin, PDO::PARAM_LOB);
         else                  $stmt->bindValue(':ip', null,    PDO::PARAM_NULL);
 
-        $stmt->execute();
+        try {
+          $stmt->execute();
+        } 
+       catch (PDOException $e) {
+            if ($e->getCode() === '23000') {
+               http_response_code(409);
+               echo json_encode(["error" => "Session with this sid already exists"]);
+               return;
+            }
+
+           throw $e;
+       }
 
         http_response_code(201);
         echo json_encode(["id" => (int)$pdo->lastInsertId(), "sid" => $sid]);
