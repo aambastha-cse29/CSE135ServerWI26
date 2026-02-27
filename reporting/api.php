@@ -268,14 +268,28 @@ function eventsFunction(PDO $pdo, string $method, ?int $id, ?string $type): void
             INSERT INTO events (session_id, event_type, ts_client, ts_server, page, payload)
             VALUES (:session_id, :event_type, :ts_client, :ts_server, :page, CAST(:payload AS JSON))
         ");
-        $stmt->execute([
-            ':session_id' => $session_id,
-            ':event_type' => $event_type,
-            ':ts_client'  => $body['ts_client'] ?? null,
-            ':ts_server'  => $now,
-            ':page'       => $page,
-            ':payload'    => $payload_json,
+
+        try {
+            $stmt->execute([
+              ':session_id' => $session_id,
+              ':event_type' => $event_type,
+              ':ts_client'  => $body['ts_client'] ?? null,
+              ':ts_server'  => $now,
+              ':page'       => $page,
+              ':payload'    => $payload_json,
         ]);
+        
+        } 
+
+       catch (PDOException $e) {
+          if ($e->getCode() === '23000') {
+            http_response_code(409);
+            echo json_encode(["error" => "Session not found — session_id does not exist"]);
+            return;
+        }
+
+        throw $e;
+      }
 
         http_response_code(201);
         echo json_encode(["id" => (int)$pdo->lastInsertId()]);
