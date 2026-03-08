@@ -320,7 +320,7 @@
   <div class="hero">
     <div class="hero-eyebrow">Overview</div>
     <h1 class="hero-title">Your Analytics,<br><span class="highlight">Your Data.</span></h1>
-    <p class="hero-sub">Explore Raw Collected Data Or Visualize Performance Metrics From The Test Site.</p>
+    <p class="hero-sub">Explore Raw Collected Data Or Visualized Data From The Test Site.</p>
   </div>
 
   <div class="divider"></div>
