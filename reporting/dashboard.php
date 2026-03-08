@@ -327,7 +327,7 @@
 
   <div class="cards">
 
-    <a href="/sessions.php" class="card card-sessions">
+    <a href="/session.php" class="card card-sessions">
       <div class="card-icon">⬡</div>
       <div class="card-body">
         <div class="card-title">Sessions Table</div>
