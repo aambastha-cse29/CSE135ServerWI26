@@ -169,25 +169,25 @@ async function collectStaticData() {
   await afterPageLoad(); // "static collected after the page has loaded"
 
  const staticData = {
-        url: window.location.href,
-        title: document.title,
-        userAgent: navigator.userAgent,
-        language: navigator.language,
-        referrer: document.referrer,
-        platform: navigator.platform,
-        screenWidth: window.screen.width,
-        screenHeight: window.screen.height,
-        viewportWidth: window.innerWidth,
-        viewportHeight: window.innerHeight,
+        url: window.location.href,  // redundant with "page" in payload, but useful to have in static for easy querying
+        title: document.title,   // "which page the user was on" (redundant with payload.page but useful for querying)
+        userAgent: navigator.userAgent,  // "what browser + version + OS"
+        language: navigator.language,  // "user's preferred language"
+        referrer: document.referrer,  // "where they came from (if anywhere)" 
+        platform: navigator.platform,  // "user's platform (e.g., Win32, MacIntel)" 
+        screenWidth: window.screen.width,  // "total screen width in pixels"
+        screenHeight: window.screen.height,  // "total screen height in pixels" 
+        viewportWidth: window.innerWidth,  // "viewport width in pixels (excludes devtools, scrollbar, etc.)"
+        viewportHeight: window.innerHeight,  // "viewport height in pixels (excludes devtools, scrollbar, etc.)"
         timestamp: new Date().toISOString(),
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        cssEnabled: isCSSenabled(),
-        imageAllowed: await isImageAllowed(),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, // "user's timezone"
+        cssEnabled: isCSSenabled(),  // "are CSS rules applying (proxy for CSS support and permissions)"
+        imageAllowed: await isImageAllowed(),  // "can we load images (proxy for image permissions and blockers)"
         jsEnabled: true, // if this script runs, JS is enabled
-        technology:  getNetworkInfo(),
+        technology:  getNetworkInfo(), // "network info (effectiveType, downlink, rtt, saveData)"
         cookieEnabled: navigator.cookieEnabled,
-        cores: navigator.hardwareConcurrency || 0,
-        deviceMemory: navigator.deviceMemory || 0
+        cores: navigator.hardwareConcurrency || 0, // number of logical CPU cores
+        deviceMemory: navigator.deviceMemory || 0  // in GB, rounded down
     };
 
     return staticData;
@@ -232,7 +232,7 @@ function startWebVitals() {
   } catch (_) {}
 
   // ---- CLS ----
-  let clsObserver = null;
+  let clsObserver = null; // CLS is sum of layout shifts in "session windows" (max 1s gap, max 5s total window), excluding shifts from user input.
   try {
     clsObserver = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
@@ -242,15 +242,15 @@ function startWebVitals() {
         const time = entry.startTime;
 
         // Session window: max 1s gap, max 5s total window
-        const withinGap = (time - clsSessionLast) <= 1000;
-        const withinWindow = (time - clsSessionStart) <= 5000;
+        const withinGap = (time - clsSessionLast) <= 1000; //     1s from last shift in session
+        const withinWindow = (time - clsSessionStart) <= 5000; // 5s from first shift in session
 
         if (!clsSessionEntries.length || (withinGap && withinWindow)) {
           // same session
-          clsSessionEntries.push(entry);
-          clsSessionLast = time;
+          clsSessionEntries.push(entry); // we could store these details if needed for debugging, but for now we just keep the running total
+          clsSessionLast = time; // update last shift time
           if (!clsSessionStart) clsSessionStart = time;
-          clsSessionValue += entry.value;
+          clsSessionValue += entry.value; // accumulate shift value for session
         } else {
           // new session
           clsSessionEntries = [entry];
@@ -259,7 +259,7 @@ function startWebVitals() {
           clsSessionValue = entry.value;
         }
 
-        vitals.cls = Math.max(vitals.cls, clsSessionValue);
+        vitals.cls = Math.max(vitals.cls, clsSessionValue); // CLS is max session value
       }
     });
     clsObserver.observe({ type: "layout-shift", buffered: true });
@@ -306,12 +306,12 @@ function startWebVitals() {
       lcp: vitals.lcp,     // ms
       cls: vitals.cls,     // unitless
       inp: vitals.inp,     // ms
-      lcpEntry: vitals.lcpEntry,
-      inpEntry: vitals.inpEntry
+      lcpEntry: vitals.lcpEntry, // details about the LCP element (tag, url, size)
+      inpEntry: vitals.inpEntry // details about the worst INP interaction (name, duration, startTime)
     };
   }
 
-  return { finalize };
+  return { finalize }; // call this after page load to get final vitals values
 }
 
 
@@ -329,17 +329,17 @@ async function collectPerformanceData() {
     delete timingObj.nextHopProtocol;
 
     const performanceData = {
-        "dnslookupTime": nav.domainLookupEnd - nav.domainLookupStart,
-        "tcpConnectionTime": nav.connectEnd - nav.connectStart,
-        "ttfb": ttfb,
-        "transferSize": nav.transferSize,
-        "pageLoadStart": nav.fetchStart,
-        "pageLoadEnd": nav.loadEventEnd,
-        "pageLoadTime": nav.loadEventEnd - nav.fetchStart,
-        "timingObject": timingObj
+        "dnslookupTime": nav.domainLookupEnd - nav.domainLookupStart, // ms, 0 if cached
+        "tcpConnectionTime": nav.connectEnd - nav.connectStart, // ms, 0 if cached or connection reused
+        "ttfb": ttfb, // ms, time to first byte
+        "transferSize": nav.transferSize,  // bytes, 0 if cached, includes headers
+        "pageLoadStart": nav.fetchStart,  // ms, when navigation started
+        "pageLoadEnd": nav.loadEventEnd, // ms, when load event finished
+        "pageLoadTime": nav.loadEventEnd - nav.fetchStart,  // ms, total time from navigation start to load event end
+        "timingObject": timingObj  // full navigation timing object (minus nextHopProtocol which can be large and isn't critical for analysis)
     };
 
-    return performanceData;
+    return performanceData; // "performance collected after the page has loaded, includes navigation timing details"
 }
 
 
@@ -364,18 +364,18 @@ function startActivityLogger() {
   let idleStartAt = null;
 
   // Samples / events we will persist
-  const mouseSamples = [];
-  const scrollSamples = [];
-  const clickEvents = [];
+  const mouseSamples = []; // each has t + coordinates
+  const scrollSamples = []; // each has t + coordinates
+  const clickEvents = [];  // capped
   const keyEvents = [];     // capped
   const errorEvents = [];   // capped
-  const idlePeriods = [];
+  const idlePeriods = [];  // each has endedAt + durationMs
 
   // For sampling
-  let lastMouseSampleAt = 0;
-  let lastScrollSampleAt = 0;
+  let lastMouseSampleAt = 0;  // ms
+  let lastScrollSampleAt = 0; // ms
 
-  const now = () => Date.now();
+  const now = () => Date.now(); // helper for easier testing/mocking
 
   function markActivity() {
     const t = now();
@@ -392,7 +392,7 @@ function startActivityLogger() {
   }
 
   // Idle detection timer
-  const idleInterval = setInterval(() => {
+  const idleInterval = setInterval(() => { // check for idle every 250ms (can be tuned)
     const t = now();
     if (idleStartAt === null && (t - lastActivityAt) >= IDLE_THRESHOLD_MS) {
       // Break starts right after last activity
@@ -401,7 +401,7 @@ function startActivityLogger() {
   }, 250);
 
   // ========= Errors + Resource failures =========
-  window.addEventListener("error", (event) => {
+  window.addEventListener("error", (event) => { // This captures both JS errors and resource load failures, but we can distinguish by checking event instanceof ErrorEvent (JS error) vs. event.target (resource error).
     // Resource load failure (needs capture phase)
     if (!(event instanceof ErrorEvent)) {
       const t = event.target;
@@ -419,7 +419,7 @@ function startActivityLogger() {
     // JS runtime error
     if (errorEvents.length < MAX_ERROR_EVENTS) {
       errorEvents.push({
-        type: "js_error",
+        type: "js_error", // includes syntax errors, runtime errors, etc.
         ts: now(),
         message: event.message || "Unknown error",
         source: event.filename || null,
@@ -430,7 +430,7 @@ function startActivityLogger() {
     }
   }, true); // CAPTURE PHASE REQUIRED
 
-  window.addEventListener("unhandledrejection", (ev) => {
+  window.addEventListener("unhandledrejection", (ev) => { // Unhandled promise rejections can be as important as regular errors, and often indicate missing error handling for async code.
     const r = ev.reason;
     if (errorEvents.length < MAX_ERROR_EVENTS) {
       errorEvents.push({
@@ -443,7 +443,7 @@ function startActivityLogger() {
   });
 
   // ========= Mouse =========
-  window.addEventListener("mousemove", (e) => {
+  window.addEventListener("mousemove", (e) => { // mousemove can be very frequent, so we sample
     markActivity();
     const t = now();
     if (t - lastMouseSampleAt < MOUSE_SAMPLE_MS) return;
@@ -454,7 +454,7 @@ function startActivityLogger() {
     }
   }, { passive: true });
 
-  window.addEventListener("click", (e) => {
+  window.addEventListener("click", (e) => { // clicks are discrete enough that we can capture all without sampling
     markActivity();
     const t = now();
 
@@ -464,7 +464,7 @@ function startActivityLogger() {
   }, { passive: true });
 
   // ========= Scroll =========
-  window.addEventListener("scroll", () => {
+  window.addEventListener("scroll", () => { // scroll events can be very frequent, so we sample
     markActivity();
     const t = now();
     if (t - lastScrollSampleAt < SCROLL_SAMPLE_MS) return;
@@ -476,38 +476,38 @@ function startActivityLogger() {
   }, { passive: true });
 
   // ========= Keyboard (sanitized) =========
-  const sanitizeKey = (e) => (e.key && e.key.length === 1 ? "CHAR" : (e.key || ""));
+  const sanitizeKey = (e) => (e.key && e.key.length === 1 ? "CHAR" : (e.key || "")); // "CHAR" for any single character (prevents sensitive data), otherwise use the key name (e.g., "Enter", "Backspace"), or empty string if missing
 
-  window.addEventListener("keydown", (e) => {
+  window.addEventListener("keydown", (e) => { // key events can be very frequent, so we cap them; also sanitize to prevent sensitive data leaks
     markActivity();
     if (keyEvents.length < MAX_KEY_EVENTS) {
       keyEvents.push({
-        type: "keydown",
+        type: "keydown", // keydown vs. keyup
         t: now(),
-        key: sanitizeKey(e),
+        key: sanitizeKey(e), // sanitized key value
         code: e.code,
-        ctrlKey: !!e.ctrlKey,
-        altKey: !!e.altKey,
-        shiftKey: !!e.shiftKey,
-        metaKey: !!e.metaKey,
-        repeat: !!e.repeat
+        ctrlKey: !!e.ctrlKey, //  using !! to ensure boolean values (in case of undefined)
+        altKey: !!e.altKey, // using !! to ensure boolean values (in case of undefined)
+        shiftKey: !!e.shiftKey, //  using !! to ensure boolean values (in case of undefined)
+        metaKey: !!e.metaKey, // using !! to ensure boolean values (in case of undefined)
+        repeat: !!e.repeat // using !! to ensure boolean values (in case of undefined)
       });
     }
   });
 
-  window.addEventListener("keyup", (e) => {
+  window.addEventListener("keyup", (e) => { // key events can be very frequent, so we cap them; also sanitize to prevent sensitive data leaks
     markActivity();
     if (keyEvents.length < MAX_KEY_EVENTS) {
       keyEvents.push({
-        type: "keyup",
+        type: "keyup", // keyup vs. keydown
         t: now(),
-        key: sanitizeKey(e),
+        key: sanitizeKey(e),// sanitized key value
         code: e.code,
-        ctrlKey: !!e.ctrlKey,
-        altKey: !!e.altKey,
-        shiftKey: !!e.shiftKey,
-        metaKey: !!e.metaKey,
-        repeat: !!e.repeat
+        ctrlKey: !!e.ctrlKey, // using !! to ensure boolean values (in case of undefined)
+        altKey: !!e.altKey, // using !! to ensure boolean values (in case of undefined)
+        shiftKey: !!e.shiftKey, // using !! to ensure boolean values (in case of undefined)
+        metaKey: !!e.metaKey, // using !! to ensure boolean values (in case of undefined)
+        repeat: !!e.repeat // using !! to ensure boolean values (in case of undefined)
       });
     }
   });
@@ -544,12 +544,12 @@ function startActivityLogger() {
 
       // Counts are helpful too
       const eventCounts = {
-        mousemove_samples: mouseSamples.length,
-        scroll_samples: scrollSamples.length,
-        clicks: clickEvents.length,
-        key_events: keyEvents.length,
-        idle_periods: idlePeriods.length,
-        error_events: errorEvents.length
+        mousemove_samples: mouseSamples.length, // number of mousemove samples collected
+        scroll_samples: scrollSamples.length, // number of scroll samples collected
+        clicks: clickEvents.length,  // number of click events collected
+        key_events: keyEvents.length, // number of keydown/keyup events collected 
+        idle_periods: idlePeriods.length, // number of idle breaks detected
+        error_events: errorEvents.length // number of error events collected (JS errors, unhandled rejections, resource failures)
       };
 
       return {
