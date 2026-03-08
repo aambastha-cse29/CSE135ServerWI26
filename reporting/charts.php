@@ -403,7 +403,7 @@ $lcpGoodPct = $lcpTotal > 0 ? round(($lcpGood / $lcpTotal) * 100, 1) : 0;
         <div class="lcp-note">
           <span class="pct <?= $lcpGoodPct >= 75 ? 'good' : 'poor' ?>"><?= $lcpGoodPct ?>%</span>
           <span class="threshold">Of Page Loads Have <strong>Good LCP (&lt; 2.5s)</strong>.</span>
-          <br>Google's Core Web Vitals Threshold requires Good LCP For At Least 75% Of Page Loads.
+          <br>Google's Core Web Vitals Threshold Requires Good LCP For At Least 75% Of Page Loads.
         </div>
       <?php endif; ?>
     </div>
