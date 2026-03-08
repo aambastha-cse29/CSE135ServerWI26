@@ -24,10 +24,10 @@ if ($action === 'login') {
         $_SESSION['logged_in']  = true;
         $_SESSION['username']   = $username;
         $_SESSION['expires_at'] = time() + SESSION_DURATION;
-        header("Location: /dashboard.php");
+        header("Location: /dashboard");
         exit;
     } else {
-        header("Location: /login.php?error=invalid");
+        header("Location: /login?error=invalid");
         exit;
     }
 }
@@ -35,11 +35,11 @@ if ($action === 'login') {
 elseif ($action === 'logout') {
     $_SESSION = [];
     session_destroy();
-    header("Location: /login.php?status=logged_out");
+    header("Location: /login?status=logged_out");
     exit;
 }
 
 else {
-    header("Location: /login.php");
+    header("Location: /login");
     exit;
 }

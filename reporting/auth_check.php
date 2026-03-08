@@ -6,7 +6,7 @@
 session_start();
 
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    header("Location: /login.php");
+    header("Location: /login");
     exit;
 }
 
@@ -14,7 +14,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 if (!isset($_SESSION['expires_at']) || time() > $_SESSION['expires_at']) {
     $_SESSION = [];
     session_destroy();
-    header("Location: /login.php?status=expired");
+    header("Location: /login?status=expired");
     exit;
 }
 
