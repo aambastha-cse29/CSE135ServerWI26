@@ -327,7 +327,7 @@
 
   <div class="cards">
 
-    <a href="/session.php" class="card card-sessions">
+    <a href="/session" class="card card-sessions">
       <div class="card-icon">⬡</div>
       <div class="card-body">
         <div class="card-title">Sessions Table</div>
@@ -336,7 +336,7 @@
       <div class="card-arrow">View Sessions <span>→</span></div>
     </a>
 
-    <a href="/events.php" class="card card-events">
+    <a href="/events" class="card card-events">
       <div class="card-icon">◈</div>
       <div class="card-body">
         <div class="card-title">Events Table</div>
@@ -345,7 +345,7 @@
       <div class="card-arrow">View Events <span>→</span></div>
     </a>
 
-    <a href="/charts.php" class="card card-visualized">
+    <a href="/charts" class="card card-visualized">
       <div class="card-icon">◎</div>
       <div class="card-body">
         <div class="card-title">Visualized Data</div>
