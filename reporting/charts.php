@@ -338,7 +338,11 @@
       meta.innerHTML = `<strong>${total}</strong> session${total !== 1 ? 's' : ''} analyzed`;
 
       if (total === 0) {
-        container.innerHTML = '<div class="state-box">No session data available yet.</div>';
+        const box = document.createElement('div');
+        box.className   = 'state-box';
+        box.textContent = 'No session data available yet.';
+        container.innerHTML = '';
+        container.appendChild(box);
         return;
       }
 
@@ -383,8 +387,11 @@
 
     } catch (err) {
       meta.textContent = '';
-      document.getElementById('browser-chart-container').innerHTML =
-        `<div class="state-box error">Failed to load: ${err.message}</div>`;
+      const box = document.createElement('div');
+      box.className   = 'state-box error';
+      box.textContent = `Failed to load: ${err.message}`;
+      document.getElementById('browser-chart-container').innerHTML = '';
+      document.getElementById('browser-chart-container').appendChild(box);
     }
   }
 
@@ -424,7 +431,11 @@
       meta.innerHTML = `<strong>${total}</strong> page load${total !== 1 ? 's' : ''} measured`;
 
       if (total === 0) {
-        container.innerHTML = '<div class="state-box">No LCP data available yet.</div>';
+        const box = document.createElement('div');
+        box.className   = 'state-box';
+        box.textContent = 'No LCP data available yet.';
+        container.innerHTML = '';
+        container.appendChild(box);
         return;
       }
 
@@ -475,18 +486,36 @@
         }
       });
 
-      // LCP note
+      // LCP note — built via DOM, pct is a computed number not raw API data
       const isGood = parseFloat(pct) >= 75;
-      noteEl.innerHTML = `
-        <div class="lcp-note">
-          <span class="pct ${isGood ? 'good' : 'poor'}">${pct}%</span>
-          <span>of page loads have <strong>good LCP (&lt; 2.5s)</strong>.</span><br>
-          Google's Core Web Vitals threshold requires good LCP for at least 75% of page loads.
-        </div>`;
+      const note   = document.createElement('div');
+      note.className = 'lcp-note';
+
+      const pctSpan = document.createElement('span');
+      pctSpan.className   = `pct ${isGood ? 'good' : 'poor'}`;
+      pctSpan.textContent = `${pct}%`;
+
+      const desc = document.createElement('span');
+      desc.textContent = ' of page loads have good LCP (< 2.5s).';
+
+      const br = document.createElement('br');
+
+      const threshold = document.createElement('span');
+      threshold.textContent = "Google's Core Web Vitals threshold requires good LCP for at least 75% of page loads.";
+
+      note.appendChild(pctSpan);
+      note.appendChild(desc);
+      note.appendChild(br);
+      note.appendChild(threshold);
+      noteEl.appendChild(note);
 
     } catch (err) {
       meta.textContent = '';
-      container.innerHTML = `<div class="state-box error">Failed to load: ${err.message}</div>`;
+      const box = document.createElement('div');
+      box.className   = 'state-box error';
+      box.textContent = `Failed to load: ${err.message}`;
+      container.innerHTML = '';
+      container.appendChild(box);
     }
   }
 
