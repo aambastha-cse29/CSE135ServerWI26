@@ -292,17 +292,26 @@
 
 </div>
 <script>
-  // Set date
   document.getElementById('date-footer').textContent =
     new Date().toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
 
-  function escHtml(str) {
-    if (str === null || str === undefined) return '<span class="null-val">—</span>';
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+  function nullCell(td) {
+    const span = document.createElement('span');
+    span.className = 'null-val';
+    span.textContent = '—';
+    td.appendChild(span);
+  }
+
+  function makeCell(className, value, title) {
+    const td = document.createElement('td');
+    td.className = className;
+    if (value === null || value === undefined || value === '') {
+      nullCell(td);
+    } else {
+      td.textContent = value;
+      if (title) td.title = value;
+    }
+    return td;
   }
 
   async function loadSessions() {
@@ -310,49 +319,49 @@
     const meta      = document.getElementById('meta');
 
     try {
-      const res  = await fetch('/api/sessions');
+      const res      = await fetch('/api/sessions');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const sessions = await res.json();
       const total    = sessions.length;
 
+      // Meta — safe static markup, no analytics data
       meta.innerHTML = `<strong>${total}</strong> session${total !== 1 ? 's' : ''} collected`;
 
       if (total === 0) {
-        container.innerHTML = '<div class="state-box">No sessions collected yet.</div>';
+        container.textContent = 'No sessions collected yet.';
+        container.className   = 'state-box';
         return;
       }
 
-      let rows = '';
+      // Build table via DOM — all analytics values set via textContent
+      const table = document.createElement('table');
+
+      const thead = table.createTHead();
+      const hrow  = thead.insertRow();
+      ['ID', 'SID', 'First Seen', 'Last Seen', 'IP Address', 'User Agent'].forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        hrow.appendChild(th);
+      });
+
+      const tbody = table.createTBody();
       for (const s of sessions) {
-        rows += `
-          <tr>
-            <td class="col-id">${escHtml(s.id)}</td>
-            <td class="col-sid" title="${escHtml(s.sid)}">${escHtml(s.sid)}</td>
-            <td class="col-time">${escHtml(s.first_seen)}</td>
-            <td class="col-time">${escHtml(s.last_seen)}</td>
-            <td class="col-ip">${s.ip ? escHtml(s.ip) : '<span class="null-val">—</span>'}</td>
-            <td class="col-ua" title="${escHtml(s.user_agent)}">${s.user_agent ? escHtml(s.user_agent) : '<span class="null-val">—</span>'}</td>
-          </tr>`;
+        const tr = tbody.insertRow();
+        tr.appendChild(makeCell('col-id',   s.id));
+        tr.appendChild(makeCell('col-sid',  s.sid,        true));
+        tr.appendChild(makeCell('col-time', s.first_seen));
+        tr.appendChild(makeCell('col-time', s.last_seen));
+        tr.appendChild(makeCell('col-ip',   s.ip));
+        tr.appendChild(makeCell('col-ua',   s.user_agent, true));
       }
 
-      container.innerHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>SID</th>
-              <th>First Seen</th>
-              <th>Last Seen</th>
-              <th>IP Address</th>
-              <th>User Agent</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>`;
+      container.innerHTML = '';
+      container.appendChild(table);
 
     } catch (err) {
-      meta.textContent = '';
-      container.innerHTML = `<div class="state-box error">Failed to load sessions: ${err.message}</div>`;
+      meta.textContent      = '';
+      container.textContent = `Failed to load sessions: ${err.message}`;
+      container.className   = 'state-box error';
     }
   }
 
