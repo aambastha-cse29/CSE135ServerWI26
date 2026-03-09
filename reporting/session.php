@@ -1,35 +1,4 @@
 <?php require_once 'auth_check.php'; ?>
-<?php
-// --------------------
-// DB CONNECTION
-// --------------------
-try {
-    $pdo = new PDO(
-        "mysql:host=localhost;dbname=cse135;charset=utf8mb4",
-        "cse135user",
-        "MySQLAman123CSE135!",
-        [
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES   => false,
-        ]
-    );
-} catch (Throwable $e) {
-    die("Database connection failed.");
-}
-
-$stmt = $pdo->query("
-    SELECT id, sid, first_seen, last_seen, INET6_NTOA(ip) as ip, user_agent
-    FROM sessions
-    ORDER BY id DESC
-");
-$sessions = $stmt->fetchAll();
-$total    = count($sessions);
-?>
-
-<!-- The HTML and CSS for the sessions page is embedded below. It includes a header with navigation, a page title, a table to display session data, and a footer. 
-The design uses a dark theme with green accents, and includes responsive styling for the table. -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,18 +7,17 @@ The design uses a dark theme with green accents, and includes responsive styling
   <title>Analytics · Sessions</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-  <!-- Embedded CSS For Styling The Sessions Page -->
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:      #0a0a0f;
-      --surface: #111118;
-      --border:  #1e1e2e;
-      --accent:  #00ff9d;
-      --accent2: #0066ff;
-      --text:    #e8e8f0;
-      --muted:   #5a5a7a;
+      --bg:        #0a0a0f;
+      --surface:   #111118;
+      --border:    #1e1e2e;
+      --accent:    #00ff9d;
+      --accent2:   #0066ff;
+      --text:      #e8e8f0;
+      --muted:     #5a5a7a;
       --row-hover: #16161f;
     }
 
@@ -60,10 +28,7 @@ The design uses a dark theme with green accents, and includes responsive styling
       min-height: 100vh;
     }
 
-    body {
-      position: relative;
-      overflow-x: hidden;
-    }
+    body { position: relative; overflow-x: hidden; }
 
     body::before {
       content: '';
@@ -91,7 +56,6 @@ The design uses a dark theme with green accents, and includes responsive styling
       padding: 48px 32px;
     }
 
-    /* ---------- HEADER ---------- */
     header {
       display: flex;
       align-items: center;
@@ -125,11 +89,7 @@ The design uses a dark theme with green accents, and includes responsive styling
 
     .brand-title span { color: var(--accent); }
 
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .header-actions { display: flex; align-items: center; gap: 12px; }
 
     .btn-back {
       background: transparent;
@@ -145,10 +105,7 @@ The design uses a dark theme with green accents, and includes responsive styling
       letter-spacing: 0.05em;
     }
 
-    .btn-back:hover {
-      border-color: var(--accent2);
-      color: var(--accent2);
-    }
+    .btn-back:hover { border-color: var(--accent2); color: var(--accent2); }
 
     .logout-form button {
       background: transparent;
@@ -163,12 +120,8 @@ The design uses a dark theme with green accents, and includes responsive styling
       letter-spacing: 0.05em;
     }
 
-    .logout-form button:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
+    .logout-form button:hover { border-color: var(--accent); color: var(--accent); }
 
-    /* ---------- PAGE TITLE ---------- */
     .page-heading {
       margin-bottom: 32px;
       animation: fadeUp 0.5s ease 0.1s both;
@@ -198,17 +151,35 @@ The design uses a dark theme with green accents, and includes responsive styling
 
     .page-title span { color: var(--accent2); }
 
-    .page-meta {
+    .page-meta { font-size: 12px; color: var(--muted); }
+    .page-meta strong { color: var(--accent); font-weight: 500; }
+
+    /* Loading / error states */
+    .state-box {
+      padding: 60px 20px;
+      text-align: center;
       font-size: 12px;
       color: var(--muted);
     }
 
-    .page-meta strong {
-      color: var(--accent);
-      font-weight: 500;
+    .state-box.error { color: #ff4466; }
+
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 10px;
+      vertical-align: middle;
     }
 
-    /* ---------- TABLE WRAPPER ---------- */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     .table-wrapper {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -226,9 +197,7 @@ The design uses a dark theme with green accents, and includes responsive styling
       background: linear-gradient(90deg, var(--accent2), var(--accent));
     }
 
-    .table-scroll {
-      overflow-x: auto;
-    }
+    .table-scroll { overflow-x: auto; }
 
     table {
       width: 100%;
@@ -236,9 +205,7 @@ The design uses a dark theme with green accents, and includes responsive styling
       font-size: 12px;
     }
 
-    thead tr {
-      border-bottom: 1px solid var(--border);
-    }
+    thead tr { border-bottom: 1px solid var(--border); }
 
     thead th {
       padding: 16px 20px;
@@ -257,7 +224,6 @@ The design uses a dark theme with green accents, and includes responsive styling
     }
 
     tbody tr:last-child { border-bottom: none; }
-
     tbody tr:hover { background: var(--row-hover); }
 
     tbody td {
@@ -266,57 +232,13 @@ The design uses a dark theme with green accents, and includes responsive styling
       vertical-align: middle;
     }
 
-    /* Column specific styles */
-    .col-id {
-      color: var(--muted);
-      font-size: 11px;
-    }
+    .col-id    { color: var(--muted); font-size: 11px; }
+    .col-sid   { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent2); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .col-time  { font-size: 11px; color: var(--muted); white-space: nowrap; }
+    .col-ip    { font-size: 11px; color: var(--accent); white-space: nowrap; }
+    .col-ua    { font-size: 11px; color: var(--muted); max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .null-val  { color: var(--border); font-style: italic; }
 
-    .col-sid {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--accent2);
-      max-width: 180px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .col-time {
-      font-size: 11px;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
-    .col-ip {
-      font-size: 11px;
-      color: var(--accent);
-      white-space: nowrap;
-    }
-
-    .col-ua {
-      font-size: 11px;
-      color: var(--muted);
-      max-width: 280px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .null-val {
-      color: var(--border);
-      font-style: italic;
-    }
-
-    /* ---------- EMPTY STATE ---------- */
-    .empty {
-      padding: 60px 20px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    /* ---------- FOOTER ---------- */
     footer {
       margin-top: 48px;
       padding-top: 24px;
@@ -327,29 +249,18 @@ The design uses a dark theme with green accents, and includes responsive styling
       animation: fadeUp 0.5s ease 0.3s both;
     }
 
-    .footer-left {
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-    }
-
+    .footer-left { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
     .footer-left span { color: var(--accent); }
-
-    .footer-right {
-      font-size: 11px;
-      color: var(--muted);
-    }
+    .footer-right { font-size: 11px; color: var(--muted); }
   </style>
 </head>
-<!-- The body of the sessions page includes a header with a brand label and navigation, a page heading with a title and meta information, 
-a table that lists session data from the database, and a footer with site information and the current date. -->
 <body>
-
 <div class="page">
 
   <header>
     <div>
       <div class="brand-label">CSE135 · Analytics</div>
+      <div class="brand-title">Data<span>Lens</span></div>
     </div>
     <div class="header-actions">
       <a href="/dashboard" class="btn-back">← Dashboard</a>
@@ -363,16 +274,68 @@ a table that lists session data from the database, and a footer with site inform
   <div class="page-heading">
     <div class="page-eyebrow">Raw Data</div>
     <h1 class="page-title"><span>Sessions</span> Table</h1>
-    <div class="page-meta">
-      <strong><?= $total ?></strong> session<?= $total !== 1 ? 's' : '' ?> collected
-    </div>
+    <div class="page-meta" id="meta">Loading...</div>
   </div>
 
   <div class="table-wrapper">
     <div class="table-scroll">
-      <?php if ($total === 0): ?>
-        <div class="empty">No sessions collected yet.</div>
-      <?php else: ?>
+      <div id="table-container">
+        <div class="state-box"><span class="spinner"></span> Fetching sessions...</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-left">CSE135 · WI2026 · <span>reporting.cse135wi2026.site</span></div>
+    <div class="footer-right" id="date-footer"></div>
+  </footer>
+
+</div>
+<script>
+  // Set date
+  document.getElementById('date-footer').textContent =
+    new Date().toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+
+  function escHtml(str) {
+    if (str === null || str === undefined) return '<span class="null-val">—</span>';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  async function loadSessions() {
+    const container = document.getElementById('table-container');
+    const meta      = document.getElementById('meta');
+
+    try {
+      const res  = await fetch('/api/sessions');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const sessions = await res.json();
+      const total    = sessions.length;
+
+      meta.innerHTML = `<strong>${total}</strong> session${total !== 1 ? 's' : ''} collected`;
+
+      if (total === 0) {
+        container.innerHTML = '<div class="state-box">No sessions collected yet.</div>';
+        return;
+      }
+
+      let rows = '';
+      for (const s of sessions) {
+        rows += `
+          <tr>
+            <td class="col-id">${escHtml(s.id)}</td>
+            <td class="col-sid" title="${escHtml(s.sid)}">${escHtml(s.sid)}</td>
+            <td class="col-time">${escHtml(s.first_seen)}</td>
+            <td class="col-time">${escHtml(s.last_seen)}</td>
+            <td class="col-ip">${s.ip ? escHtml(s.ip) : '<span class="null-val">—</span>'}</td>
+            <td class="col-ua" title="${escHtml(s.user_agent)}">${s.user_agent ? escHtml(s.user_agent) : '<span class="null-val">—</span>'}</td>
+          </tr>`;
+      }
+
+      container.innerHTML = `
         <table>
           <thead>
             <tr>
@@ -384,35 +347,16 @@ a table that lists session data from the database, and a footer with site inform
               <th>User Agent</th>
             </tr>
           </thead>
-          <tbody>
-            <?php foreach ($sessions as $row): ?>
-              <tr>
-                <td class="col-id"><?= htmlspecialchars($row['id']) ?></td>
-                <td class="col-sid" title="<?= htmlspecialchars($row['sid']) ?>">
-                  <?= htmlspecialchars($row['sid']) ?>
-                </td>
-                <td class="col-time"><?= htmlspecialchars($row['first_seen']) ?></td>
-                <td class="col-time"><?= htmlspecialchars($row['last_seen']) ?></td>
-                <td class="col-ip">
-                  <?= $row['ip'] ? htmlspecialchars($row['ip']) : '<span class="null-val">—</span>' ?>
-                </td>
-                <td class="col-ua" title="<?= htmlspecialchars($row['user_agent'] ?? '') ?>">
-                  <?= $row['user_agent'] ? htmlspecialchars($row['user_agent']) : '<span class="null-val">—</span>' ?>
-                </td>
-              </tr>
-            <?php endforeach; ?>
-          </tbody>
-        </table>
-      <?php endif; ?>
-    </div>
-  </div>
+          <tbody>${rows}</tbody>
+        </table>`;
 
-  <footer>
-    <div class="footer-left">CSE135 · WI2026 · <span>reporting.cse135wi2026.site</span></div>
-    <div class="footer-right"><?= date('D, d M Y') ?></div>
-  </footer>
+    } catch (err) {
+      meta.textContent = '';
+      container.innerHTML = `<div class="state-box error">Failed to load sessions: ${err.message}</div>`;
+    }
+  }
 
-</div>
-
+  loadSessions();
+</script>
 </body>
 </html>
