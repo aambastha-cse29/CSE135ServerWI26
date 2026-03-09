@@ -1,73 +1,4 @@
 <?php require_once 'auth_check.php'; ?>
-<?php
-// --------------------
-// DB CONNECTION
-// --------------------
-try {
-    $pdo = new PDO(
-        "mysql:host=localhost;dbname=cse135;charset=utf8mb4",
-        "cse135user",
-        "MySQLAman123CSE135!",
-        [
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES   => false,
-        ]
-    );
-} catch (Throwable $e) {
-    die("Database connection failed.");
-}
-
-// --------------------
-// CHART 1: Browser Share (from sessions)
-// --------------------
-$uaStmt = $pdo->query("SELECT user_agent FROM sessions WHERE user_agent IS NOT NULL");
-$uaRows  = $uaStmt->fetchAll();
-
-$browsers = ['Chrome' => 0, 'Firefox' => 0, 'Safari' => 0, 'Edge' => 0, 'Other' => 0];
-
-foreach ($uaRows as $row) {
-    $ua = $row['user_agent'];
-    if (str_contains($ua, 'Edg/') || str_contains($ua, 'Edge/')) {
-        $browsers['Edge']++;
-    } elseif (str_contains($ua, 'Firefox/')) {
-        $browsers['Firefox']++;
-    } elseif (str_contains($ua, 'Chrome/') || str_contains($ua, 'CriOS/')) {
-        $browsers['Chrome']++;
-    } elseif (str_contains($ua, 'Safari/') || str_contains($ua, 'FxiOS/')) {
-        $browsers['Safari']++;
-    } else {
-        $browsers['Other']++;
-    }
-}
-
-// Remove zero-count browsers for cleaner chart
-$browsers = array_filter($browsers, fn($v) => $v > 0);
-
-$browserLabels = json_encode(array_keys($browsers));
-$browserCounts = json_encode(array_values($browsers));
-$totalSessions = array_sum($browsers);
-
-// --------------------
-// CHART 2: LCP Distribution
-// --------------------
-$lcpStmt = $pdo->query("
-    SELECT
-        SUM(CASE WHEN JSON_EXTRACT(payload, '$.webVitals.lcp') < 2500 THEN 1 ELSE 0 END) as good,
-        SUM(CASE WHEN JSON_EXTRACT(payload, '$.webVitals.lcp') >= 2500 THEN 1 ELSE 0 END) as needs_improvement,
-        COUNT(*) as total
-    FROM events
-    WHERE event_type = 'performance'
-    AND JSON_EXTRACT(payload, '$.webVitals.lcp') IS NOT NULL
-");
-$lcpData = $lcpStmt->fetch();
-
-$lcpGood  = (int)($lcpData['good'] ?? 0);
-$lcpBad   = (int)($lcpData['needs_improvement'] ?? 0);
-$lcpTotal = (int)($lcpData['total'] ?? 0);
-$lcpGoodPct = $lcpTotal > 0 ? round(($lcpGood / $lcpTotal) * 100, 1) : 0;
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -98,10 +29,7 @@ $lcpGoodPct = $lcpTotal > 0 ? round(($lcpGood / $lcpTotal) * 100, 1) : 0;
       min-height: 100vh;
     }
 
-    body {
-      position: relative;
-      overflow-x: hidden;
-    }
+    body { position: relative; overflow-x: hidden; }
 
     body::before {
       content: '';
@@ -129,7 +57,6 @@ $lcpGoodPct = $lcpTotal > 0 ? round(($lcpGood / $lcpTotal) * 100, 1) : 0;
       padding: 48px 32px;
     }
 
-    /* ---------- HEADER ---------- */
     header {
       display: flex;
       align-items: center;
@@ -163,11 +90,7 @@ $lcpGoodPct = $lcpTotal > 0 ? round(($lcpGood / $lcpTotal) * 100, 1) : 0;
 
     .brand-title span { color: var(--accent); }
 
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .header-actions { display: flex; align-items: center; gap: 12px; }
 
     .btn-back {
       background: transparent;
@@ -177,7 +100,6 @@ $lcpGoodPct = $lcpTotal > 0 ? round(($lcpGood / $lcpTotal) * 100, 1) : 0;
       font-family: 'DM Mono', monospace;
       font-size: 12px;
       color: var(--muted);
-      cursor: pointer;
       text-decoration: none;
       transition: border-color 0.2s, color 0.2s;
       letter-spacing: 0.05em;
@@ -200,7 +122,6 @@ $lcpGoodPct = $lcpTotal > 0 ? round(($lcpGood / $lcpTotal) * 100, 1) : 0;
 
     .logout-form button:hover { border-color: var(--accent); color: var(--accent); }
 
-    /* ---------- PAGE HEADING ---------- */
     .page-heading {
       margin-bottom: 48px;
       animation: fadeUp 0.5s ease 0.1s both;
@@ -229,14 +150,12 @@ $lcpGoodPct = $lcpTotal > 0 ? round(($lcpGood / $lcpTotal) * 100, 1) : 0;
 
     .page-title span { color: var(--accent3); }
 
-    /* ---------- CHART GRID ---------- */
     .charts-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
       gap: 24px;
     }
 
-    /* ---------- CHART CARD ---------- */
     .chart-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -254,17 +173,8 @@ $lcpGoodPct = $lcpTotal > 0 ? round(($lcpGood / $lcpTotal) * 100, 1) : 0;
       height: 2px;
     }
 
-    .chart-card.card-browser::before {
-      background: linear-gradient(90deg, var(--accent2), var(--accent));
-    }
-
-    .chart-card.card-lcp::before {
-      background: linear-gradient(90deg, var(--accent), var(--accent3));
-    }
-
-    .chart-header {
-      margin-bottom: 8px;
-    }
+    .chart-card.card-browser::before { background: linear-gradient(90deg, var(--accent2), var(--accent)); }
+    .chart-card.card-lcp::before     { background: linear-gradient(90deg, var(--accent), var(--accent3)); }
 
     .chart-title {
       font-family: 'Syne', sans-serif;
@@ -274,25 +184,33 @@ $lcpGoodPct = $lcpTotal > 0 ? round(($lcpGood / $lcpTotal) * 100, 1) : 0;
       margin-bottom: 4px;
     }
 
-    .chart-subtitle {
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.04em;
-    }
-
-    .chart-meta {
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 24px;
-    }
-
+    .chart-subtitle { font-size: 11px; color: var(--muted); letter-spacing: 0.04em; margin-bottom: 8px; }
+    .chart-meta { font-size: 11px; color: var(--muted); margin-bottom: 24px; }
     .chart-meta strong { color: var(--accent); font-weight: 500; }
 
-    .chart-container {
-      position: relative;
+    .state-box {
+      padding: 40px 0;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
     }
 
-    /* ---------- LCP NOTE ---------- */
+    .state-box.error { color: #ff4466; }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     .lcp-note {
       margin-top: 20px;
       padding: 14px 16px;
@@ -312,22 +230,9 @@ $lcpGoodPct = $lcpTotal > 0 ? round(($lcpGood / $lcpTotal) * 100, 1) : 0;
       margin-bottom: 4px;
     }
 
-    .lcp-note .pct.good  { color: var(--accent); }
-    .lcp-note .pct.poor  { color: var(--accent3); }
+    .lcp-note .pct.good { color: var(--accent); }
+    .lcp-note .pct.poor { color: var(--accent3); }
 
-    .lcp-note .threshold {
-      color: var(--text);
-    }
-
-    /* ---------- EMPTY STATE ---------- */
-    .empty-state {
-      padding: 40px 0;
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    /* ---------- FOOTER ---------- */
     footer {
       margin-top: 64px;
       padding-top: 24px;
@@ -344,12 +249,12 @@ $lcpGoodPct = $lcpTotal > 0 ? round(($lcpGood / $lcpTotal) * 100, 1) : 0;
   </style>
 </head>
 <body>
-
 <div class="page">
 
   <header>
     <div>
       <div class="brand-label">CSE135 · Analytics</div>
+      <div class="brand-title">Data<span>Lens</span></div>
     </div>
     <div class="header-actions">
       <a href="/dashboard" class="btn-back">← Dashboard</a>
@@ -369,167 +274,224 @@ $lcpGoodPct = $lcpTotal > 0 ? round(($lcpGood / $lcpTotal) * 100, 1) : 0;
 
     <!-- CHART 1: Browser Share -->
     <div class="chart-card card-browser">
-      <div class="chart-header">
-        <div class="chart-title">Browser Share</div>
-        <div class="chart-subtitle">Unique Sessions By Browser</div>
+      <div class="chart-title">Browser Share</div>
+      <div class="chart-subtitle">Unique sessions by browser</div>
+      <div class="chart-meta" id="browser-meta"><span class="spinner"></span> Loading...</div>
+      <div id="browser-chart-container">
+        <canvas id="browserChart"></canvas>
       </div>
-      <div class="chart-meta">
-        <strong><?= $totalSessions ?></strong> Session<?= $totalSessions !== 1 ? 's' : '' ?> Analyzed
-      </div>
-      <?php if ($totalSessions === 0): ?>
-        <div class="empty-state">No Session Data Available Yet.</div>
-      <?php else: ?>
-        <div class="chart-container">
-          <canvas id="browserChart"></canvas>
-        </div>
-      <?php endif; ?>
     </div>
 
     <!-- CHART 2: LCP Distribution -->
     <div class="chart-card card-lcp">
-      <div class="chart-header">
-        <div class="chart-title">LCP Distribution</div>
-        <div class="chart-subtitle">Largest Contentful Paint Threshold Breakdown</div>
+      <div class="chart-title">LCP Distribution</div>
+      <div class="chart-subtitle">Largest Contentful Paint threshold breakdown</div>
+      <div class="chart-meta" id="lcp-meta"><span class="spinner"></span> Loading...</div>
+      <div id="lcp-chart-container">
+        <canvas id="lcpChart"></canvas>
       </div>
-      <div class="chart-meta">
-        <strong><?= $lcpTotal ?></strong> Page Load<?= $lcpTotal !== 1 ? 's' : '' ?> Measured
-      </div>
-      <?php if ($lcpTotal === 0): ?>
-        <div class="empty-state">No LCP Data Available Yet.</div>
-      <?php else: ?>
-        <div class="chart-container">
-          <canvas id="lcpChart"></canvas>
-        </div>
-        <div class="lcp-note">
-          <span class="pct <?= $lcpGoodPct >= 75 ? 'good' : 'poor' ?>"><?= $lcpGoodPct ?>%</span>
-          <span class="threshold">Of Page Loads Have <strong>Good LCP (&lt; 2.5s)</strong>.</span>
-          <br>Google's Core Web Vitals Threshold Requires Good LCP For At Least 75% Of Page Loads.
-        </div>
-      <?php endif; ?>
+      <div id="lcp-note"></div>
     </div>
 
   </div>
 
   <footer>
     <div class="footer-left">CSE135 · WI2026 · <span>reporting.cse135wi2026.site</span></div>
-    <div class="footer-right"><?= date('D, d M Y') ?></div>
+    <div class="footer-right" id="date-footer"></div>
   </footer>
 
 </div>
-
 <script>
-// ---------- SHARED CHART DEFAULTS ----------
-Chart.defaults.color         = '#5a5a7a';
-Chart.defaults.font.family   = "'DM Mono', monospace";
-Chart.defaults.font.size     = 11;
+  document.getElementById('date-footer').textContent =
+    new Date().toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
 
-// ---------- CHART 1: Browser Share ----------
-<?php if ($totalSessions > 0): ?>
-new Chart(document.getElementById('browserChart'), {
-  type: 'doughnut',
-  data: {
-    labels: <?= $browserLabels ?>,
-    datasets: [{
-      data: <?= $browserCounts ?>,
-      backgroundColor: [
-        'rgba(0, 102, 255, 0.8)',
-        'rgba(0, 255, 157, 0.75)',
-        'rgba(255, 107, 53, 0.8)',
-        'rgba(170, 136, 255, 0.8)',
-        'rgba(90, 90, 122, 0.6)',
-      ],
-      borderColor: '#0a0a0f',
-      borderWidth: 3,
-      hoverOffset: 8,
-    }]
-  },
-  options: {
-    responsive: true,
-    cutout: '65%',
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: {
-          padding: 16,
-          usePointStyle: true,
-          pointStyleWidth: 8,
-        }
-      },
-      tooltip: {
-        callbacks: {
-          label: (ctx) => {
-            const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
-            const pct   = ((ctx.parsed / total) * 100).toFixed(1);
-            return ` ${ctx.label}: ${ctx.parsed} session${ctx.parsed !== 1 ? 's' : ''} (${pct}%)`;
+  Chart.defaults.color       = '#5a5a7a';
+  Chart.defaults.font.family = "'DM Mono', monospace";
+  Chart.defaults.font.size   = 11;
+
+  // ---------- CHART 1: Browser Share ----------
+  async function loadBrowserChart() {
+    const meta      = document.getElementById('browser-meta');
+    const container = document.getElementById('browser-chart-container');
+
+    try {
+      const res      = await fetch('/api/sessions');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const sessions = await res.json();
+
+      const browsers = { Chrome: 0, Firefox: 0, Safari: 0, Edge: 0, Other: 0 };
+
+      for (const s of sessions) {
+        const ua = s.user_agent || '';
+        if (ua.includes('Edg/') || ua.includes('Edge/'))       browsers.Edge++;
+        else if (ua.includes('Firefox/'))                       browsers.Firefox++;
+        else if (ua.includes('Chrome/') || ua.includes('CriOS/')) browsers.Chrome++;
+        else if (ua.includes('Safari/') || ua.includes('FxiOS/')) browsers.Safari++;
+        else                                                    browsers.Other++;
+      }
+
+      // Remove zero entries
+      const labels = Object.keys(browsers).filter(k => browsers[k] > 0);
+      const data   = labels.map(k => browsers[k]);
+      const total  = data.reduce((a, b) => a + b, 0);
+
+      meta.innerHTML = `<strong>${total}</strong> session${total !== 1 ? 's' : ''} analyzed`;
+
+      if (total === 0) {
+        container.innerHTML = '<div class="state-box">No session data available yet.</div>';
+        return;
+      }
+
+      new Chart(document.getElementById('browserChart'), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Sessions',
+            data,
+            backgroundColor: [
+              'rgba(0, 102, 255, 0.8)',
+              'rgba(0, 255, 157, 0.75)',
+              'rgba(255, 107, 53, 0.8)',
+              'rgba(170, 136, 255, 0.8)',
+              'rgba(90, 90, 122, 0.6)',
+            ],
+            borderColor: '#0a0a0f',
+            borderWidth: 2,
+            borderRadius: 6,
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: { grid: { color: 'rgba(30,30,46,0.8)' } },
+            y: { grid: { color: 'rgba(30,30,46,0.8)' }, ticks: { stepSize: 1 } }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const pct = ((ctx.parsed.y / total) * 100).toFixed(1);
+                  return ` ${ctx.parsed.y} session${ctx.parsed.y !== 1 ? 's' : ''} (${pct}%)`;
+                }
+              }
+            }
           }
         }
-      }
+      });
+
+    } catch (err) {
+      meta.textContent = '';
+      document.getElementById('browser-chart-container').innerHTML =
+        `<div class="state-box error">Failed to load: ${err.message}</div>`;
     }
   }
-});
-<?php endif; ?>
 
-// ---------- CHART 2: LCP Distribution ----------
-<?php if ($lcpTotal > 0): ?>
-new Chart(document.getElementById('lcpChart'), {
-  type: 'bar',
-  data: {
-    labels: ['LCP'],
-    datasets: [
-      {
-        label: 'Good (< 2.5s)',
-        data: [<?= $lcpGood ?>],
-        backgroundColor: 'rgba(0, 255, 157, 0.75)',
-        borderColor: 'rgba(0, 255, 157, 0.9)',
-        borderWidth: 1,
-        borderRadius: 4,
-      },
-      {
-        label: 'Needs Improvement (≥ 2.5s)',
-        data: [<?= $lcpBad ?>],
-        backgroundColor: 'rgba(255, 107, 53, 0.75)',
-        borderColor: 'rgba(255, 107, 53, 0.9)',
-        borderWidth: 1,
-        borderRadius: 4,
+  // ---------- CHART 2: LCP Distribution ----------
+  async function loadLcpChart() {
+    const meta      = document.getElementById('lcp-meta');
+    const container = document.getElementById('lcp-chart-container');
+    const noteEl    = document.getElementById('lcp-note');
+
+    try {
+      const res    = await fetch('/api/events/performance');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const events = await res.json();
+
+      // Fetch full payloads to get webVitals.lcp
+      const payloadFetches = events.map(async (e) => {
+        try {
+          const r = await fetch(`/api/events/${e.id}`);
+          if (r.ok) {
+            const full = await r.json();
+            e.payload = full.payload;
+          }
+        } catch (_) {}
+      });
+
+      await Promise.all(payloadFetches);
+
+      const lcpValues = events
+        .map(e => e.payload?.webVitals?.lcp)
+        .filter(v => v !== null && v !== undefined);
+
+      const total = lcpValues.length;
+      const good  = lcpValues.filter(v => v < 2500).length;
+      const bad   = lcpValues.filter(v => v >= 2500).length;
+      const pct   = total > 0 ? ((good / total) * 100).toFixed(1) : 0;
+
+      meta.innerHTML = `<strong>${total}</strong> page load${total !== 1 ? 's' : ''} measured`;
+
+      if (total === 0) {
+        container.innerHTML = '<div class="state-box">No LCP data available yet.</div>';
+        return;
       }
-    ]
-  },
-  options: {
-    indexAxis: 'y',
-    responsive: true,
-    scales: {
-      x: {
-        stacked: true,
-        grid: { color: 'rgba(30, 30, 46, 0.8)' },
-        ticks: { stepSize: 1 }
-      },
-      y: {
-        stacked: true,
-        grid: { display: false },
-      }
-    },
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: {
-          padding: 16,
-          usePointStyle: true,
-          pointStyleWidth: 8,
-        }
-      },
-      tooltip: {
-        callbacks: {
-          label: (ctx) => {
-            const pct = ((ctx.parsed.x / <?= $lcpTotal ?>) * 100).toFixed(1);
-            return ` ${ctx.dataset.label}: ${ctx.parsed.x} load${ctx.parsed.x !== 1 ? 's' : ''} (${pct}%)`;
+
+      new Chart(document.getElementById('lcpChart'), {
+        type: 'bar',
+        data: {
+          labels: ['LCP'],
+          datasets: [
+            {
+              label: 'Good (< 2.5s)',
+              data: [good],
+              backgroundColor: 'rgba(0, 255, 157, 0.75)',
+              borderColor: 'rgba(0, 255, 157, 0.9)',
+              borderWidth: 1,
+              borderRadius: 4,
+            },
+            {
+              label: 'Needs Improvement (≥ 2.5s)',
+              data: [bad],
+              backgroundColor: 'rgba(255, 107, 53, 0.75)',
+              borderColor: 'rgba(255, 107, 53, 0.9)',
+              borderWidth: 1,
+              borderRadius: 4,
+            }
+          ]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          scales: {
+            x: { stacked: true, grid: { color: 'rgba(30,30,46,0.8)' }, ticks: { stepSize: 1 } },
+            y: { stacked: true, grid: { display: false } }
+          },
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { padding: 16, usePointStyle: true, pointStyleWidth: 8 }
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const p = ((ctx.parsed.x / total) * 100).toFixed(1);
+                  return ` ${ctx.dataset.label}: ${ctx.parsed.x} load${ctx.parsed.x !== 1 ? 's' : ''} (${p}%)`;
+                }
+              }
+            }
           }
         }
-      }
+      });
+
+      // LCP note
+      const isGood = parseFloat(pct) >= 75;
+      noteEl.innerHTML = `
+        <div class="lcp-note">
+          <span class="pct ${isGood ? 'good' : 'poor'}">${pct}%</span>
+          <span>of page loads have <strong>good LCP (&lt; 2.5s)</strong>.</span><br>
+          Google's Core Web Vitals threshold requires good LCP for at least 75% of page loads.
+        </div>`;
+
+    } catch (err) {
+      meta.textContent = '';
+      container.innerHTML = `<div class="state-box error">Failed to load: ${err.message}</div>`;
     }
   }
-});
-<?php endif; ?>
+
+  loadBrowserChart();
+  loadLcpChart();
 </script>
-
 </body>
 </html>
