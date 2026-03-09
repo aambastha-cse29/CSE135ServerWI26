@@ -310,6 +310,7 @@
   <header>
     <div>
       <div class="brand-label">CSE135 · Analytics</div>
+      <div class="brand-title">Data<span>Lens</span></div>
     </div>
     <form class="logout-form" method="POST" action="/auth.php">
       <input type="hidden" name="action" value="logout">
