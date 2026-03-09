@@ -376,79 +376,126 @@
   document.getElementById('date-footer').textContent =
     new Date().toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
 
-  let allEvents = [];
+  let allEvents  = [];
   let activeType = 'all';
 
-  function escHtml(str) {
-    if (str === null || str === undefined) return '';
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+  function nullCell(td) {
+    const span = document.createElement('span');
+    span.className   = 'null-val';
+    span.textContent = '—';
+    td.appendChild(span);
   }
 
   function renderTable(events) {
     const container = document.getElementById('table-container');
+    container.innerHTML = '';
 
     if (events.length === 0) {
-      container.innerHTML = '<div class="state-box">No events found.</div>';
+      const box = document.createElement('div');
+      box.className   = 'state-box';
+      box.textContent = 'No events found.';
+      container.appendChild(box);
       return;
     }
 
-    let rows = '';
+    const table = document.createElement('table');
+
+    // thead
+    const thead = table.createTHead();
+    const hrow  = thead.insertRow();
+    ['', 'ID', 'Session', 'Type', 'Server Time', 'Page'].forEach(h => {
+      const th = document.createElement('th');
+      th.textContent = h;
+      hrow.appendChild(th);
+    });
+
+    const tbody = table.createTBody();
+
     for (const e of events) {
-      const payloadStr = JSON.stringify(e.payload || {}, null, 2);
-      rows += `
-        <tr class="data-row" data-id="${e.id}" data-type="${escHtml(e.event_type)}">
-          <td style="width:32px; padding-left:16px;"><span class="expand-icon">▶</span></td>
-          <td class="col-id">${escHtml(e.id)}</td>
-          <td class="col-sid">${escHtml(e.session_id)}</td>
-          <td><span class="badge badge-${escHtml(e.event_type)}">${escHtml(e.event_type)}</span></td>
-          <td class="col-time">${escHtml(e.ts_server)}</td>
-          <td class="col-page" title="${escHtml(e.page)}">${e.page ? escHtml(e.page) : '<span class="null-val">—</span>'}</td>
-        </tr>
-        <tr class="payload-row" id="payload-${e.id}">
-          <td colspan="6">
-            <div class="payload-inner">
-              <div class="payload-label">Payload — event #${e.id}</div>
-              <pre class="payload-json">${escHtml(payloadStr)}</pre>
-            </div>
-          </td>
-        </tr>`;
-    }
+      // --- data row ---
+      const dataRow = tbody.insertRow();
+      dataRow.className      = 'data-row';
+      dataRow.dataset.id     = e.id;
+      dataRow.dataset.type   = e.event_type || '';
 
-    container.innerHTML = `
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>ID</th>
-            <th>Session</th>
-            <th>Type</th>
-            <th>Server Time</th>
-            <th>Page</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>`;
+      // expand icon cell
+      const iconTd = dataRow.insertCell();
+      iconTd.style.cssText = 'width:32px; padding-left:16px;';
+      const icon = document.createElement('span');
+      icon.className   = 'expand-icon';
+      icon.textContent = '▶';
+      iconTd.appendChild(icon);
 
-    // Row expand
-    container.querySelectorAll('.data-row').forEach(row => {
-      row.addEventListener('click', () => {
-        const id         = row.dataset.id;
-        const payloadRow = document.getElementById('payload-' + id);
-        const isOpen     = payloadRow.classList.contains('open');
+      // id
+      const idTd = dataRow.insertCell();
+      idTd.className   = 'col-id';
+      idTd.textContent = e.id;
 
-        container.querySelectorAll('.payload-row.open').forEach(r => r.classList.remove('open'));
-        container.querySelectorAll('.data-row.expanded').forEach(r => r.classList.remove('expanded'));
+      // session_id
+      const sidTd = dataRow.insertCell();
+      sidTd.className   = 'col-sid';
+      sidTd.textContent = e.session_id;
 
+      // event_type badge
+      const typeTd = dataRow.insertCell();
+      const badge  = document.createElement('span');
+      const safeType = ['static','performance','activity','noscript'].includes(e.event_type) ? e.event_type : 'static';
+      badge.className   = `badge badge-${safeType}`;
+      badge.textContent = e.event_type || '';
+      typeTd.appendChild(badge);
+
+      // ts_server
+      const timeTd = dataRow.insertCell();
+      timeTd.className   = 'col-time';
+      timeTd.textContent = e.ts_server || '';
+
+      // page
+      const pageTd = dataRow.insertCell();
+      pageTd.className = 'col-page';
+      if (e.page) {
+        pageTd.textContent = e.page;
+        pageTd.title       = e.page;
+      } else {
+        nullCell(pageTd);
+      }
+
+      // --- payload row ---
+      const payloadRow = tbody.insertRow();
+      payloadRow.className = 'payload-row';
+      payloadRow.id        = `payload-${e.id}`;
+
+      const payloadTd = payloadRow.insertCell();
+      payloadTd.colSpan = 6;
+
+      const inner = document.createElement('div');
+      inner.className = 'payload-inner';
+
+      const label = document.createElement('div');
+      label.className   = 'payload-label';
+      label.textContent = `Payload — event #${e.id}`;
+
+      const pre = document.createElement('pre');
+      pre.className = 'payload-json';
+      // JSON.stringify is safe — textContent prevents any HTML injection
+      pre.textContent = JSON.stringify(e.payload || {}, null, 2);
+
+      inner.appendChild(label);
+      inner.appendChild(pre);
+      payloadTd.appendChild(inner);
+
+      // expand click handler
+      dataRow.addEventListener('click', () => {
+        const isOpen = payloadRow.classList.contains('open');
+        tbody.querySelectorAll('.payload-row.open').forEach(r => r.classList.remove('open'));
+        tbody.querySelectorAll('.data-row.expanded').forEach(r => r.classList.remove('expanded'));
         if (!isOpen) {
           payloadRow.classList.add('open');
-          row.classList.add('expanded');
+          dataRow.classList.add('expanded');
         }
       });
-    });
+    }
+
+    container.appendChild(table);
   }
 
   function applyFilter(type) {
@@ -461,6 +508,7 @@
   function updateMeta() {
     const filtered = activeType === 'all' ? allEvents : allEvents.filter(e => e.event_type === activeType);
     const total    = filtered.length;
+    // meta uses static markup only, no analytics data in HTML tags
     document.getElementById('meta').innerHTML =
       `<strong>${total}</strong> event${total !== 1 ? 's' : ''} · click any row to expand payload`;
   }
@@ -491,7 +539,8 @@
 
     } catch (err) {
       document.getElementById('meta').textContent = '';
-      container.innerHTML = `<div class="state-box error">Failed to load events: ${err.message}</div>`;
+      container.textContent = `Failed to load events: ${err.message}`;
+      container.className   = 'state-box error';
     }
   }
 
