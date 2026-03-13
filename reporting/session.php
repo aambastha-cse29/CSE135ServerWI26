@@ -469,7 +469,7 @@ require_once 'auth_helpers.php';
     try {
       const canvas = await html2canvas(document.querySelector('.page'), {
         backgroundColor: '#0a0a0f',
-        scale: 2,
+        scale: 1,
         useCORS: true,
       });
 
