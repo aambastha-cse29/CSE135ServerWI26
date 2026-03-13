@@ -333,7 +333,7 @@ $user = getCurrentUser();
 
   <div class="hero">
     <div class="hero-eyebrow">Overview</div>
-    <h1 class="hero-title">Your analytics,<br><span class="highlight">your data.</span></h1>
+    <h1 class="hero-title">Your Analytics,<br><span class="highlight">Your Data.</span></h1>
     <p class="hero-sub">Welcome back, <?= htmlspecialchars($user['username']) ?>. You are logged in as <strong><?= htmlspecialchars($user['role']) ?></strong>.</p>
   </div>
 
