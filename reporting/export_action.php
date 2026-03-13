@@ -7,7 +7,7 @@
 require_once 'auth_check.php';
 require_once 'auth_helpers.php';
 require_once 'db.php';
-require_once '/var/www/reporting.cse135wi2026.site/dompdf/vendor/autoload.php';
+require_once '/var/lib/dompdf/vendor/autoload.php';
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
