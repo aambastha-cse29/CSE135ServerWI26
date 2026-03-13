@@ -1,4 +1,7 @@
-<?php require_once 'auth_check.php'; ?>
+<?php
+require_once 'auth_check.php';
+require_once 'auth_helpers.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -325,6 +328,74 @@
     .footer-left { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
     .footer-left span { color: var(--accent); }
     .footer-right { font-size: 11px; color: var(--muted); }
+
+    /* ---------- EXPORT PANEL ---------- */
+    .export-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin-top: 32px;
+      animation: fadeUp 0.5s ease 0.3s both;
+    }
+
+    .export-title {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .export-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .export-input {
+      flex: 1;
+      min-width: 200px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .export-input:focus { border-color: var(--accent); }
+
+    .btn-export {
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--bg);
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    .btn-export:hover { opacity: 0.85; }
+    .btn-export:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .export-status {
+      font-size: 12px;
+      margin-top: 12px;
+      min-height: 18px;
+    }
+
+    .export-status.success { color: var(--accent); }
+    .export-status.error   { color: var(--accent3); }
   </style>
 </head>
 <body>
@@ -371,7 +442,19 @@
     <div class="footer-right" id="date-footer"></div>
   </footer>
 
+  <?php if (canExport()): ?>
+  <div class="export-panel">
+    <div class="export-title">Export Report</div>
+    <div class="export-row">
+      <input type="text" class="export-input" id="export-title" placeholder="Report title e.g. Events Report March 2026">
+      <button class="btn-export" id="export-btn" onclick="exportReport()">Export PDF →</button>
+    </div>
+    <div class="export-status" id="export-status"></div>
+  </div>
+  <?php endif; ?>
+
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
   document.getElementById('date-footer').textContent =
     new Date().toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
@@ -554,6 +637,59 @@
   });
 
   loadEvents();
+
+  async function exportReport() {
+    const title  = document.getElementById('export-title').value.trim();
+    const status = document.getElementById('export-status');
+    const btn    = document.getElementById('export-btn');
+
+    if (!title) {
+      status.textContent = 'Please enter a report title.';
+      status.className   = 'export-status error';
+      return;
+    }
+
+    btn.disabled       = true;
+    btn.textContent    = 'Capturing...';
+    status.textContent = '';
+    status.className   = 'export-status';
+
+    try {
+      const canvas = await html2canvas(document.querySelector('.page'), {
+        backgroundColor: '#0a0a0f',
+        scale: 2,
+        useCORS: true,
+      });
+
+      const image = canvas.toDataURL('image/png');
+
+      btn.textContent = 'Generating PDF...';
+
+      const formData = new FormData();
+      formData.append('title',    title);
+      formData.append('category', 'events');
+      formData.append('image',    image);
+
+      const res  = await fetch('/export_action', { method: 'POST', body: formData });
+      const data = await res.json();
+
+      if (data.success) {
+        status.textContent = 'Report saved successfully.';
+        status.className   = 'export-status success';
+        window.open(data.pdf_url, '_blank');
+      } else {
+        status.textContent = 'Export failed: ' + data.error;
+        status.className   = 'export-status error';
+      }
+
+    } catch (err) {
+      status.textContent = 'Export failed: ' + err.message;
+      status.className   = 'export-status error';
+    } finally {
+      btn.disabled    = false;
+      btn.textContent = 'Export PDF →';
+    }
+  }
 </script>
 </body>
 </html>
