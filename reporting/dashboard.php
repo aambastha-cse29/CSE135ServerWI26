@@ -342,7 +342,7 @@ $user = getCurrentUser();
   <div class="cards">
 
     <?php if (!isViewer()): ?>
-    <a href="/sessions" class="card card-sessions">
+    <a href="/session" class="card card-sessions">
       <div class="card-icon">⬡</div>
       <div class="card-body">
         <div class="card-title">Sessions Table</div>
