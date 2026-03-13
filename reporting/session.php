@@ -324,6 +324,24 @@ require_once 'auth_helpers.php';
     .export-status.success { color: var(--accent); }
     .export-status.error   { color: var(--accent3); }
 
+    .export-comments {
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 12px;
+      resize: vertical;
+      min-height: 80px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .export-comments:focus { border-color: var(--accent); }
+    .export-comments::placeholder { color: var(--muted); }
+
     /* Hide fixed overlays during html2canvas capture */
     body.exporting::before,
     body.exporting::after { display: none !important; }
@@ -372,12 +390,12 @@ require_once 'auth_helpers.php';
       <input type="text" class="export-input" id="export-title" placeholder="Report title e.g. Sessions Report March 2026">
       <button class="btn-export" id="export-btn" onclick="exportReport()">Export PDF →</button>
     </div>
+    <textarea class="export-comments" id="export-comments" placeholder="Analyst comments (optional) — included in the PDF…"></textarea>
     <div class="export-status" id="export-status"></div>
   </div>
   <?php endif; ?>
 
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
   document.getElementById('date-footer').textContent =
     new Date().toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
@@ -457,15 +475,10 @@ require_once 'auth_helpers.php';
   loadSessions();
 
   async function exportReport() {
-    const title  = document.getElementById('export-title').value.trim();
-    const status = document.getElementById('export-status');
-    const btn    = document.getElementById('export-btn');
-
-    if (!dataReady) {
-      status.textContent = 'Please wait for data to load first.';
-      status.className   = 'export-status error';
-      return;
-    }
+    const title    = document.getElementById('export-title').value.trim();
+    const comments = document.getElementById('export-comments').value.trim();
+    const status   = document.getElementById('export-status');
+    const btn      = document.getElementById('export-btn');
 
     if (!title) {
       status.textContent = 'Please enter a report title.';
@@ -474,29 +487,15 @@ require_once 'auth_helpers.php';
     }
 
     btn.disabled       = true;
-    btn.textContent    = 'Capturing...';
+    btn.textContent    = 'Generating PDF...';
     status.textContent = '';
     status.className   = 'export-status';
 
     try {
-      document.body.classList.add('exporting');
-
-      const canvas = await html2canvas(document.querySelector('.page'), {
-        backgroundColor: '#0a0a0f',
-        scale: 1,
-        useCORS: true,
-      });
-
-      document.body.classList.remove('exporting');
-
-      const image = canvas.toDataURL('image/png');
-
-      btn.textContent = 'Generating PDF...';
-
       const formData = new FormData();
       formData.append('title',    title);
       formData.append('category', 'sessions');
-      formData.append('image',    image);
+      formData.append('comments', comments);
 
       const res  = await fetch('/export_action', { method: 'POST', body: formData });
       const data = await res.json();
