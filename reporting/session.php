@@ -323,6 +323,10 @@ require_once 'auth_helpers.php';
 
     .export-status.success { color: var(--accent); }
     .export-status.error   { color: var(--accent3); }
+
+    /* Hide fixed overlays during html2canvas capture */
+    body.exporting::before,
+    body.exporting::after { display: none !important; }
   </style>
 </head>
 <body>
@@ -440,6 +444,7 @@ require_once 'auth_helpers.php';
 
       container.innerHTML = '';
       container.appendChild(table);
+      dataReady = true;
 
     } catch (err) {
       meta.textContent      = '';
@@ -448,12 +453,19 @@ require_once 'auth_helpers.php';
     }
   }
 
+  let dataReady = false;
   loadSessions();
 
   async function exportReport() {
     const title  = document.getElementById('export-title').value.trim();
     const status = document.getElementById('export-status');
     const btn    = document.getElementById('export-btn');
+
+    if (!dataReady) {
+      status.textContent = 'Please wait for data to load first.';
+      status.className   = 'export-status error';
+      return;
+    }
 
     if (!title) {
       status.textContent = 'Please enter a report title.';
@@ -467,11 +479,15 @@ require_once 'auth_helpers.php';
     status.className   = 'export-status';
 
     try {
+      document.body.classList.add('exporting');
+
       const canvas = await html2canvas(document.querySelector('.page'), {
         backgroundColor: '#0a0a0f',
         scale: 1,
         useCORS: true,
       });
+
+      document.body.classList.remove('exporting');
 
       const image = canvas.toDataURL('image/png');
 
