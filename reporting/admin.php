@@ -684,5 +684,23 @@ $SECTIONS = ['performance', 'activity', 'traffic'];
     if (e.target === this) closeEdit();
   });
 </script>
+<noscript>
+  <style>
+    .page, header { display: none !important; }
+    .noscript-wall {
+      position: fixed; inset: 0;
+      background: #0a0a0f;
+      display: flex; align-items: center; justify-content: center;
+      font-family: monospace; text-align: center; padding: 32px;
+    }
+  </style>
+  <div class="noscript-wall">
+    <div>
+      <div style="font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:#00ff9d;margin-bottom:12px;">CSE135 · Analytics</div>
+      <div style="font-size:24px;font-weight:bold;color:#e8e8f0;margin-bottom:12px;">JavaScript Required</div>
+      <div style="font-size:12px;color:#5a5a7a;line-height:1.7;">This Page Requires JavaScript To Run.<br>Please Enable It In Your Browser Settings And Reload The Page.</div>
+    </div>
+  </div>
+</noscript>
 </body>
 </html>
