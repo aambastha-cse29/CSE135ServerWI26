@@ -327,7 +327,7 @@ $user = getCurrentUser();
     </div>
     <form class="logout-form" method="POST" action="/auth.php">
       <input type="hidden" name="action" value="logout">
-      <button type="submit">Sign out →</button>
+      <button type="submit">Sign Out →</button>
     </form>
   </header>
 

@@ -138,7 +138,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
       <a href="/dashboard" class="btn-back">← Dashboard</a>
       <form class="logout-form" method="POST" action="/auth.php">
         <input type="hidden" name="action" value="logout">
-        <button type="submit">Sign out →</button>
+        <button type="submit">Sign Out →</button>
       </form>
     </div>
   </header>
@@ -238,7 +238,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
       <div class="kpi-card kpi-activity-idle">
         <div class="kpi-label">Median Idle Duration</div>
         <div class="kpi-value" id="kpi-avg-idle">—</div>
-        <div class="kpi-sub">Per idle period recorded</div>
+        <div class="kpi-sub">Per Idle Period Recorded</div>
       </div>
     </div>
     <div class="charts-grid">

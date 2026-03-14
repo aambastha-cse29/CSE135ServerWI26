@@ -301,7 +301,7 @@ $reports = $pdo->query("
       <a href="/dashboard" class="btn-back">← Dashboard</a>
       <form class="logout-form" method="POST" action="/auth">
         <input type="hidden" name="action" value="logout">
-        <button type="submit">Sign out →</button>
+        <button type="submit">Sign Out →</button>
       </form>
     </div>
   </header>
