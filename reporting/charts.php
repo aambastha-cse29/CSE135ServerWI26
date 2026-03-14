@@ -10,13 +10,11 @@ if (isViewer()) {
 
 $isSuperAdmin = isSuperAdmin();
 $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Analytics · Charts</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -110,6 +108,14 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
     .vitals-note .pct.good { color: var(--accent); }
     .vitals-note .pct.poor { color: var(--accent3); }
 
+    /* Fixed height prevents chart shrinking on hover */
+    #lcp-chart-container,
+    #inp-chart-container,
+    #browser-chart-container,
+    #sessions-day-container,
+    #pages-chart-container,
+    #idle-chart-container { position: relative; height: 220px; }
+
     /* FOOTER */
     footer { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; animation: fadeUp 0.5s ease 0.3s both; }
     .footer-left { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
@@ -146,7 +152,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
       <a href="/dashboard" class="btn-back">← Dashboard</a>
       <form class="logout-form" method="POST" action="/auth.php">
         <input type="hidden" name="action" value="logout">
-        <button type="submit">Sign Out →</button>
+        <button type="submit">Sign out →</button>
       </form>
     </div>
   </header>
@@ -179,7 +185,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
       <div class="kpi-card kpi-inp">
         <div class="kpi-label">Median INP</div>
         <div class="kpi-value" id="kpi-inp">—</div>
-        <div class="kpi-sub">Interaction To Next Paint</div>
+        <div class="kpi-sub">Interaction to Next Paint</div>
       </div>
       <div class="kpi-card kpi-cls">
         <div class="kpi-label">Median CLS</div>
@@ -189,7 +195,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
       <div class="kpi-card kpi-ttfb">
         <div class="kpi-label">Median TTFB</div>
         <div class="kpi-value" id="kpi-ttfb">—</div>
-        <div class="kpi-sub">Time To First Byte</div>
+        <div class="kpi-sub">Time to First Byte</div>
       </div>
     </div>
     <div class="charts-grid">
@@ -202,7 +208,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
       </div>
       <div class="chart-card card-inp">
         <div class="chart-title">INP Distribution</div>
-        <div class="chart-subtitle">Core Web Vital · Interaction To Next Paint</div>
+        <div class="chart-subtitle">Core Web Vital · Interaction to Next Paint</div>
         <div class="chart-meta" id="inp-meta"><span class="spinner"></span> Loading...</div>
         <div id="inp-chart-container"><canvas id="inpChart"></canvas></div>
         <div id="inp-note"></div>
@@ -216,13 +222,13 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
     <div class="charts-grid">
       <div class="chart-card card-browser">
         <div class="chart-title">Browser Share</div>
-        <div class="chart-subtitle">Sessions By Browser Type</div>
+        <div class="chart-subtitle">Sessions by browser type</div>
         <div class="chart-meta" id="browser-meta"><span class="spinner"></span> Loading...</div>
         <div id="browser-chart-container"><canvas id="browserChart"></canvas></div>
       </div>
       <div class="chart-card card-sessions">
-        <div class="chart-title">Sessions By Day</div>
-        <div class="chart-subtitle">Daily Session Volume Over Time</div>
+        <div class="chart-title">Sessions by Day</div>
+        <div class="chart-subtitle">Daily session volume over time</div>
         <div class="chart-meta" id="sessions-day-meta"><span class="spinner"></span> Loading...</div>
         <div id="sessions-day-container"><canvas id="sessionsDayChart"></canvas></div>
       </div>
@@ -239,26 +245,26 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
         <div class="kpi-sub" id="kpi-top-page-count"></div>
       </div>
       <div class="kpi-card kpi-activity-time">
-        <div class="kpi-label">Median Time On Page</div>
+        <div class="kpi-label">Median Time on Page</div>
         <div class="kpi-value" id="kpi-avg-time">—</div>
-        <div class="kpi-sub">Across All Activity Events</div>
+        <div class="kpi-sub">Across all activity events</div>
       </div>
       <div class="kpi-card kpi-activity-idle">
         <div class="kpi-label">Median Idle Duration</div>
         <div class="kpi-value" id="kpi-avg-idle">—</div>
-        <div class="kpi-sub">Per Idle Period Recorded</div>
+        <div class="kpi-sub">Per idle period recorded</div>
       </div>
     </div>
     <div class="charts-grid">
       <div class="chart-card card-pages">
         <div class="chart-title">Most Viewed Pages</div>
-        <div class="chart-subtitle">Activity Events By Page URL</div>
+        <div class="chart-subtitle">Activity events by page URL</div>
         <div class="chart-meta" id="pages-meta"><span class="spinner"></span> Loading...</div>
         <div id="pages-chart-container"><canvas id="pagesChart"></canvas></div>
       </div>
       <div class="chart-card card-idle">
         <div class="chart-title">Idle Period Distribution</div>
-        <div class="chart-subtitle">Duration Of Idle Periods Across Sessions</div>
+        <div class="chart-subtitle">Duration of idle periods across sessions</div>
         <div class="chart-meta" id="idle-meta"><span class="spinner"></span> Loading...</div>
         <div id="idle-chart-container"><canvas id="idleChart"></canvas></div>
       </div>
@@ -278,7 +284,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
       <input type="text" class="export-input" id="export-title-input" placeholder="Report title e.g. Performance Report March 2026">
       <button class="btn-export" id="export-btn" onclick="exportReport()">Export PDF →</button>
     </div>
-    <textarea class="export-comments" id="export-comments" placeholder="Analyst/Superadmin comments (optional) — included in the PDF…"></textarea>
+    <textarea class="export-comments" id="export-comments" placeholder="Analyst comments (optional) — included in the PDF…"></textarea>
     <div class="export-status" id="export-status"></div>
   </div>
   <?php endif; ?>
@@ -392,7 +398,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
           { label: 'Needs Improvement (≥ 2.5s)', data: [bad],  backgroundColor: 'rgba(255,107,53,0.75)', borderColor: 'rgba(255,107,53,0.9)', borderWidth: 1, borderRadius: 4 }
         ]},
         options: {
-          indexAxis: 'y', responsive: true,
+          indexAxis: 'y', responsive: true, maintainAspectRatio: false,
           scales: { x: { stacked: true, grid: { color: 'rgba(30,30,46,0.8)' }, ticks: { stepSize: 1 } }, y: { stacked: true, grid: { display: false } } },
           plugins: { legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true, pointStyleWidth: 8 } }, tooltip: { callbacks: { label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.x} (${((ctx.parsed.x/total)*100).toFixed(1)}%)` } } }
         }
@@ -424,7 +430,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
           { label: 'Poor (≥ 500ms)',                data: [poor],  backgroundColor: 'rgba(255,107,53,0.75)', borderColor: 'rgba(255,107,53,0.9)', borderWidth: 1, borderRadius: 4 }
         ]},
         options: {
-          indexAxis: 'y', responsive: true,
+          indexAxis: 'y', responsive: true, maintainAspectRatio: false,
           scales: { x: { stacked: true, grid: { color: 'rgba(30,30,46,0.8)' }, ticks: { stepSize: 1 } }, y: { stacked: true, grid: { display: false } } },
           plugins: { legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true, pointStyleWidth: 8 } }, tooltip: { callbacks: { label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.x} (${((ctx.parsed.x/total)*100).toFixed(1)}%)` } } }
         }
@@ -458,7 +464,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
       new Chart(document.getElementById('browserChart'), {
         type: 'bar',
         data: { labels, datasets: [{ label: 'Sessions', data, backgroundColor: ['rgba(0,102,255,0.8)','rgba(0,255,157,0.75)','rgba(255,107,53,0.8)','rgba(170,136,255,0.8)','rgba(90,90,122,0.6)'], borderColor: '#0a0a0f', borderWidth: 2, borderRadius: 6 }] },
-        options: { responsive: true, scales: { x: { grid: { color: 'rgba(30,30,46,0.8)' } }, y: { grid: { color: 'rgba(30,30,46,0.8)' }, ticks: { stepSize: 1 } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => ` ${ctx.parsed.y} session${ctx.parsed.y !== 1 ? 's' : ''} (${((ctx.parsed.y/total)*100).toFixed(1)}%)` } } } }
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { color: 'rgba(30,30,46,0.8)' } }, y: { grid: { color: 'rgba(30,30,46,0.8)' }, ticks: { stepSize: 1 } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => ` ${ctx.parsed.y} session${ctx.parsed.y !== 1 ? 's' : ''} (${((ctx.parsed.y/total)*100).toFixed(1)}%)` } } } }
       });
     } catch (err) { meta.textContent = ''; cont.innerHTML = `<div class="state-box error">Failed to load: ${err.message}</div>`; }
   }
@@ -485,7 +491,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
       new Chart(document.getElementById('sessionsDayChart'), {
         type: 'line',
         data: { labels: sortedDays, datasets: [{ label: 'Sessions', data, borderColor: 'rgba(0,255,157,0.9)', backgroundColor: 'rgba(0,255,157,0.08)', borderWidth: 2, pointBackgroundColor: 'rgba(0,255,157,0.9)', pointRadius: 4, tension: 0.3, fill: true }] },
-        options: { responsive: true, scales: { x: { grid: { color: 'rgba(30,30,46,0.8)' }, ticks: { maxRotation: 45, font: { size: 10 } } }, y: { grid: { color: 'rgba(30,30,46,0.8)' }, ticks: { stepSize: 1 }, beginAtZero: true } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => ` ${ctx.parsed.y} session${ctx.parsed.y !== 1 ? 's' : ''}` } } } }
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { color: 'rgba(30,30,46,0.8)' }, ticks: { maxRotation: 45, font: { size: 10 } } }, y: { grid: { color: 'rgba(30,30,46,0.8)' }, ticks: { stepSize: 1 }, beginAtZero: true } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => ` ${ctx.parsed.y} session${ctx.parsed.y !== 1 ? 's' : ''}` } } } }
       });
     } catch (err) { meta.textContent = ''; cont.innerHTML = `<div class="state-box error">Failed to load: ${err.message}</div>`; }
   }
@@ -576,7 +582,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
         type: 'bar',
         data: { labels, datasets: [{ label: 'Events', data, backgroundColor: 'rgba(255,107,53,0.75)', borderColor: 'rgba(255,107,53,0.9)', borderWidth: 1, borderRadius: 4 }] },
         options: {
-          indexAxis: 'y', responsive: true,
+          indexAxis: 'y', responsive: true, maintainAspectRatio: false,
           scales: {
             x: { grid: { color: 'rgba(30,30,46,0.8)' }, ticks: { stepSize: 1 } },
             y: { grid: { display: false }, ticks: { font: { size: 10 } } }
@@ -615,7 +621,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
           ]
         },
         options: {
-          indexAxis: 'y', responsive: true,
+          indexAxis: 'y', responsive: true, maintainAspectRatio: false,
           scales: {
             x: { stacked: true, grid: { color: 'rgba(30,30,46,0.8)' }, ticks: { stepSize: 1 } },
             y: { stacked: true, grid: { display: false } }
