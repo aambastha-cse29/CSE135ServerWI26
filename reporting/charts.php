@@ -231,12 +231,12 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
         <div class="kpi-sub" id="kpi-top-page-count"></div>
       </div>
       <div class="kpi-card kpi-activity-time">
-        <div class="kpi-label">Avg Time on Page</div>
+        <div class="kpi-label">Median Time on Page</div>
         <div class="kpi-value" id="kpi-avg-time">—</div>
         <div class="kpi-sub">Across all activity events</div>
       </div>
       <div class="kpi-card kpi-activity-idle">
-        <div class="kpi-label">Avg Idle Duration</div>
+        <div class="kpi-label">Median Idle Duration</div>
         <div class="kpi-value" id="kpi-avg-idle">—</div>
         <div class="kpi-sub">Per idle period recorded</div>
       </div>
@@ -519,7 +519,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
 
     // Avg time on page (ms → seconds)
     const timesMs = events.map(e => e.payload?.timeOnPageMs).filter(v => v != null && v > 0);
-    const avgTime = timesMs.length > 0 ? Math.round(timesMs.reduce((a, b) => a + b, 0) / timesMs.length) : null;
+    const avgTime = timesMs.length > 0 ? median(timesMs) : null;
     const timeEl  = document.getElementById('kpi-avg-time');
     if (avgTime !== null) {
       timeEl.textContent = avgTime >= 60000
@@ -529,7 +529,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
 
     // Avg idle duration
     const idleDurations = events.flatMap(e => (e.payload?.idlePeriods || []).map(p => p.durationMs)).filter(v => v != null);
-    const avgIdle = idleDurations.length > 0 ? Math.round(idleDurations.reduce((a, b) => a + b, 0) / idleDurations.length) : null;
+    const avgIdle = idleDurations.length > 0 ? median(idleDurations) : null;
     const idleEl  = document.getElementById('kpi-avg-idle');
     if (avgIdle !== null) {
       idleEl.textContent = avgIdle >= 60000
