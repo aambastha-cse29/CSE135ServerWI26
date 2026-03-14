@@ -346,7 +346,7 @@ $user = getCurrentUser();
       <div class="card-icon">⬡</div>
       <div class="card-body">
         <div class="card-title">Sessions Table</div>
-        <div class="card-desc">Browse all tracked sessions — IP addresses, user agents, first and last seen timestamps.</div>
+        <div class="card-desc">Browse All tracked Sessions — IP Addresses, User Agents, First And Last Seen Timestamps.</div>
       </div>
       <div class="card-arrow">View sessions <span>→</span></div>
     </a>
@@ -355,7 +355,7 @@ $user = getCurrentUser();
       <div class="card-icon">◈</div>
       <div class="card-body">
         <div class="card-title">Events Table</div>
-        <div class="card-desc">Browse all collected events — static, performance, activity, and noscript payloads.</div>
+        <div class="card-desc">Browse All Collected Events — Static, Performance, Activity, And Noscript Payloads.</div>
       </div>
       <div class="card-arrow">View events <span>→</span></div>
     </a>
@@ -364,7 +364,7 @@ $user = getCurrentUser();
       <div class="card-icon">◎</div>
       <div class="card-body">
         <div class="card-title">Visualized Data</div>
-        <div class="card-desc">Web vitals charts — LCP, INP, and CLS per page from collected performance events.</div>
+        <div class="card-desc">Core Performance, Activity, And Traffic Charts To Gain Insights And Export Reports.</div>
       </div>
       <div class="card-arrow">View charts <span>→</span></div>
     </a>
