@@ -2,8 +2,15 @@
 require_once 'auth_check.php';
 require_once 'auth_helpers.php';
 
+// Viewers cannot access charts
+if (isViewer()) {
+    header('Location: /403');
+    exit;
+}
+
 $isSuperAdmin = isSuperAdmin();
 $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

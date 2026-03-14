@@ -1,6 +1,14 @@
 <?php
 require_once 'auth_check.php';
 require_once 'auth_helpers.php';
+
+// Only superadmin and analyst can access this page
+// Viewers cannot access charts
+if (isViewer()) {
+    header('Location: /403');
+    exit;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
