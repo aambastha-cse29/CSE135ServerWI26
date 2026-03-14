@@ -290,8 +290,7 @@ function startWebVitals() {
       }
     });
 
-    // durationThreshold reduces spam; pick 16ms-ish (one frame) or higher.
-    inpObserver.observe({ type: "event", buffered: true, durationThreshold: 16 });
+    inpObserver.observe({ type: "event", buffered: true, durationThreshold: 1});
   } catch (_) {
     // If not supported, vitals.inp stays null.
   }
