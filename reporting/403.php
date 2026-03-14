@@ -130,7 +130,7 @@
     <div class="code">403</div>
     <div class="label">Access Denied</div>
     <div class="title">You Don't Have Permission To View This Page</div>
-    <div class="desc">Your Account Role Does Not Have Access to This Resource</div>
+    <div class="desc">Your Account Role Does Not Have Access To This Resource</div>
     <a href="/dashboard" class="btn">← Back <Textarea:cols:rows></Textarea:cols:rows>To Dashboard</a>
   </div>
 </body>
