@@ -18,6 +18,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Analytics · Charts</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
@@ -208,7 +209,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
       </div>
       <div class="chart-card card-inp">
         <div class="chart-title">INP Distribution</div>
-        <div class="chart-subtitle">Core Web Vital · Interaction to Next Paint</div>
+        <div class="chart-subtitle">Core Web Vital · Interaction To Next Paint</div>
         <div class="chart-meta" id="inp-meta"><span class="spinner"></span> Loading...</div>
         <div id="inp-chart-container"><canvas id="inpChart"></canvas></div>
         <div id="inp-note"></div>
