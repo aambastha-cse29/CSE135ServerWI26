@@ -111,46 +111,133 @@ try {
         $summary = count($rows) . ' event' . (count($rows) !== 1 ? 's' : '');
 
     } else {
-        // charts — summarise LCP and browser data
-        $perf = $pdo->query(
-            "SELECT
-                SUM(CASE WHEN JSON_EXTRACT(payload, '$.lcp') < 2500 THEN 1 ELSE 0 END) AS good,
-                SUM(CASE WHEN JSON_EXTRACT(payload, '$.lcp') >= 2500 THEN 1 ELSE 0 END) AS bad,
-                COUNT(*) AS total
-             FROM events WHERE event_type = 'performance'"
-        )->fetch(PDO::FETCH_ASSOC);
+        // charts — full summary: performance, traffic, activity
 
+        // ── Performance ──────────────────────────────────────────────────
+        $perfRows = $pdo->query(
+            "SELECT payload FROM events WHERE event_type = 'performance'"
+        )->fetchAll(PDO::FETCH_COLUMN);
+
+        $lcpVals = []; $inpVals = []; $clsVals = []; $ttfbVals = [];
+        foreach ($perfRows as $raw) {
+            $p = json_decode($raw, true);
+            if (isset($p['webVitals']['lcp']))  $lcpVals[]  = $p['webVitals']['lcp'];
+            if (isset($p['webVitals']['inp']))  $inpVals[]  = $p['webVitals']['inp'];
+            if (isset($p['webVitals']['cls']))  $clsVals[]  = $p['webVitals']['cls'];
+            if (isset($p['ttfb']))              $ttfbVals[] = $p['ttfb'];
+        }
+
+        function medianVal(array $arr) {
+            if (!$arr) return null;
+            sort($arr);
+            $mid = (int)(count($arr) / 2);
+            return count($arr) % 2 !== 0 ? $arr[$mid] : ($arr[$mid - 1] + $arr[$mid]) / 2;
+        }
+
+        $lcpTotal = count($lcpVals);
+        $lcpGood  = count(array_filter($lcpVals, fn($v) => $v < 2500));
+        $lcpBad   = $lcpTotal - $lcpGood;
+        $lcpPct   = $lcpTotal > 0 ? round(($lcpGood / $lcpTotal) * 100, 1) : 0;
+
+        $inpTotal = count($inpVals);
+        $inpGood  = count(array_filter($inpVals, fn($v) => $v < 200));
+        $inpNeeds = count(array_filter($inpVals, fn($v) => $v >= 200 && $v < 500));
+        $inpPoor  = $inpTotal - $inpGood - $inpNeeds;
+        $inpPct   = $inpTotal > 0 ? round(($inpGood / $inpTotal) * 100, 1) : 0;
+
+        $medLcp  = $lcpVals  ? round(medianVal($lcpVals))  . 'ms' : '—';
+        $medInp  = $inpVals  ? round(medianVal($inpVals))  . 'ms' : '—';
+        $medCls  = $clsVals  ? round(medianVal($clsVals), 3)      : '—';
+        $medTtfb = $ttfbVals ? round(medianVal($ttfbVals)) . 'ms' : '—';
+
+        // ── Traffic ──────────────────────────────────────────────────────
         $browsers = $pdo->query(
             "SELECT user_agent FROM sessions WHERE user_agent IS NOT NULL"
         )->fetchAll(PDO::FETCH_COLUMN);
 
-        $counts = [];
+        $browserCounts = [];
         foreach ($browsers as $ua) {
-            if (stripos($ua, 'Chrome') !== false && stripos($ua, 'Edg') === false)       $b = 'Chrome';
-            elseif (stripos($ua, 'Firefox') !== false)                                    $b = 'Firefox';
-            elseif (stripos($ua, 'Safari') !== false && stripos($ua, 'Chrome') === false) $b = 'Safari';
-            elseif (stripos($ua, 'Edg') !== false)                                        $b = 'Edge';
-            else                                                                           $b = 'Other';
-            $counts[$b] = ($counts[$b] ?? 0) + 1;
+            if (stripos($ua, 'Edg') !== false)                                                $b = 'Edge';
+            elseif (stripos($ua, 'Chrome') !== false)                                         $b = 'Chrome';
+            elseif (stripos($ua, 'Firefox') !== false)                                        $b = 'Firefox';
+            elseif (stripos($ua, 'Safari') !== false && stripos($ua, 'Chrome') === false)     $b = 'Safari';
+            else                                                                               $b = 'Other';
+            $browserCounts[$b] = ($browserCounts[$b] ?? 0) + 1;
         }
-        arsort($counts);
+        arsort($browserCounts);
 
-        $good  = (int)($perf['good']  ?? 0);
-        $bad   = (int)($perf['bad']   ?? 0);
-        $total = (int)($perf['total'] ?? 0);
-        $pct   = $total > 0 ? round(($good / $total) * 100, 1) : 0;
+        $sessionsByDay = $pdo->query(
+            "SELECT DATE(first_seen) AS day, COUNT(*) AS cnt FROM sessions GROUP BY DATE(first_seen) ORDER BY day"
+        )->fetchAll(PDO::FETCH_ASSOC);
 
-        $tableHead  = '<tr><th>Metric</th><th>Value</th></tr>';
-        $tableBody  = "<tr><td>Good LCP (&lt; 2.5s)</td><td>{$good}</td></tr>";
-        $tableBody .= "<tr><td>Poor LCP (≥ 2.5s)</td><td>{$bad}</td></tr>";
-        $tableBody .= "<tr><td>% Good LCP</td><td>{$pct}%</td></tr>";
-        $tableBody .= '<tr><td colspan="2" class="section-sep">Browser Distribution</td></tr>';
-        foreach ($counts as $browser => $count) {
+        // ── Activity ─────────────────────────────────────────────────────
+        $activityRows = $pdo->query(
+            "SELECT payload FROM events WHERE event_type = 'activity'"
+        )->fetchAll(PDO::FETCH_COLUMN);
+
+        $pageCounts   = [];
+        $timesOnPage  = [];
+        $idleDurations = [];
+        foreach ($activityRows as $raw) {
+            $p = json_decode($raw, true);
+            if (isset($p['page'])) {
+                $path = parse_url($p['page'], PHP_URL_PATH) ?: $p['page'];
+                $pageCounts[$path] = ($pageCounts[$path] ?? 0) + 1;
+            }
+            if (isset($p['timeOnPageMs']) && $p['timeOnPageMs'] > 0) $timesOnPage[] = $p['timeOnPageMs'];
+            foreach ($p['idlePeriods'] ?? [] as $ip) {
+                if (isset($ip['durationMs'])) $idleDurations[] = $ip['durationMs'];
+            }
+        }
+        arsort($pageCounts);
+        $topPages = array_slice($pageCounts, 0, 10, true);
+
+        $idleShort  = count(array_filter($idleDurations, fn($d) => $d < 5000));
+        $idleMedium = count(array_filter($idleDurations, fn($d) => $d >= 5000 && $d < 30000));
+        $idleLong   = count(array_filter($idleDurations, fn($d) => $d >= 30000));
+
+        $medTimeOnPage   = $timesOnPage   ? round(medianVal($timesOnPage) / 1000, 1) . 's'   : '—';
+        $medIdleDuration = $idleDurations ? round(medianVal($idleDurations) / 1000, 1) . 's' : '—';
+
+        // ── Build table ───────────────────────────────────────────────────
+        $tableHead = '<tr><th>Metric</th><th>Value</th></tr>';
+
+        $tableBody  = '<tr><td colspan="2" class="section-sep">Performance</td></tr>';
+        $tableBody .= "<tr><td>Median LCP</td><td>{$medLcp}</td></tr>";
+        $tableBody .= "<tr><td>Good LCP (&lt; 2.5s)</td><td>{$lcpGood} / {$lcpTotal} ({$lcpPct}%)</td></tr>";
+        $tableBody .= "<tr><td>Median INP</td><td>{$medInp}</td></tr>";
+        $tableBody .= "<tr><td>Good INP (&lt; 200ms)</td><td>{$inpGood} / {$inpTotal} ({$inpPct}%)</td></tr>";
+        $tableBody .= "<tr><td>Median CLS</td><td>{$medCls}</td></tr>";
+        $tableBody .= "<tr><td>Median TTFB</td><td>{$medTtfb}</td></tr>";
+
+        $tableBody .= '<tr><td colspan="2" class="section-sep">Traffic · Browser Distribution</td></tr>';
+        foreach ($browserCounts as $browser => $count) {
             $b = htmlspecialchars($browser);
             $tableBody .= "<tr><td>{$b}</td><td>{$count}</td></tr>";
         }
 
-        $summary = $total . ' performance event' . ($total !== 1 ? 's' : '');
+        $tableBody .= '<tr><td colspan="2" class="section-sep">Traffic · Sessions by Day</td></tr>';
+        foreach ($sessionsByDay as $row) {
+            $day = htmlspecialchars($row['day']);
+            $tableBody .= "<tr><td>{$day}</td><td>{$row['cnt']} session" . ($row['cnt'] != 1 ? 's' : '') . "</td></tr>";
+        }
+
+        $tableBody .= '<tr><td colspan="2" class="section-sep">Activity · Most Viewed Pages (Top 10)</td></tr>';
+        foreach ($topPages as $path => $count) {
+            $p = htmlspecialchars($path);
+            $tableBody .= "<tr><td>{$p}</td><td>{$count} event" . ($count != 1 ? 's' : '') . "</td></tr>";
+        }
+
+        $tableBody .= '<tr><td colspan="2" class="section-sep">Activity · Engagement</td></tr>';
+        $tableBody .= "<tr><td>Median Time on Page</td><td>{$medTimeOnPage}</td></tr>";
+        $tableBody .= "<tr><td>Median Idle Duration</td><td>{$medIdleDuration}</td></tr>";
+        $tableBody .= "<tr><td>Idle Periods — Short (&lt; 5s)</td><td>{$idleShort}</td></tr>";
+        $tableBody .= "<tr><td>Idle Periods — Medium (5–30s)</td><td>{$idleMedium}</td></tr>";
+        $tableBody .= "<tr><td>Idle Periods — Long (&gt; 30s)</td><td>{$idleLong}</td></tr>";
+
+        $summary = $lcpTotal . ' performance event' . ($lcpTotal !== 1 ? 's' : '')
+                 . ' · ' . count($browsers) . ' session' . (count($browsers) !== 1 ? 's' : '')
+                 . ' · ' . count($activityRows) . ' activity event' . (count($activityRows) !== 1 ? 's' : '');
     }
 
 } catch (PDOException $e) {

@@ -467,7 +467,7 @@ require_once 'auth_helpers.php';
       <input type="text" class="export-input" id="export-title" placeholder="Report title e.g. Events Report March 2026">
       <button class="btn-export" id="export-btn" onclick="exportReport()">Export PDF →</button>
     </div>
-    <textarea class="export-comments" id="export-comments" placeholder="Analyst comments (optional) — included in the PDF…"></textarea>
+    <textarea class="export-comments" id="export-comments" placeholder="Analyst/Superadmin comments (optional) — included in the PDF…"></textarea>
     <div class="export-status" id="export-status"></div>
   </div>
   <?php endif; ?>
