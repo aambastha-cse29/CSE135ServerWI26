@@ -84,6 +84,11 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
     .chart-card.card-sessions::before { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
     .chart-card.card-lcp::before      { background: linear-gradient(90deg, var(--accent), var(--accent3)); }
     .chart-card.card-inp::before      { background: linear-gradient(90deg, var(--accent4), var(--accent3)); }
+    .chart-card.card-pages::before    { background: linear-gradient(90deg, var(--accent3), var(--accent4)); }
+    .chart-card.card-idle::before     { background: linear-gradient(90deg, var(--accent4), var(--accent2)); }
+    .kpi-card.kpi-activity-top::before  { background: linear-gradient(90deg, var(--accent3), var(--accent4)); }
+    .kpi-card.kpi-activity-time::before { background: linear-gradient(90deg, var(--accent4), var(--accent2)); }
+    .kpi-card.kpi-activity-idle::before { background: linear-gradient(90deg, var(--accent2), var(--accent3)); }
     .chart-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
     .chart-subtitle { font-size: 11px; color: var(--muted); letter-spacing: 0.04em; margin-bottom: 8px; }
     .chart-meta { font-size: 11px; color: var(--muted); margin-bottom: 24px; }
@@ -150,6 +155,9 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
     <?php if ($isSuperAdmin || in_array('traffic', $userSections ?? [])): ?>
     <button class="tab-btn" data-tab="traffic">Traffic</button>
     <?php endif; ?>
+    <?php if ($isSuperAdmin || in_array('activity', $userSections ?? [])): ?>
+    <button class="tab-btn" data-tab="activity">Activity</button>
+    <?php endif; ?>
   </nav>
 
   <?php if ($isSuperAdmin || in_array('performance', $userSections ?? [])): ?>
@@ -163,7 +171,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
       <div class="kpi-card kpi-inp">
         <div class="kpi-label">Median INP</div>
         <div class="kpi-value" id="kpi-inp">—</div>
-        <div class="kpi-sub">Interaction To Next Paint</div>
+        <div class="kpi-sub">Interaction to Next Paint</div>
       </div>
       <div class="kpi-card kpi-cls">
         <div class="kpi-label">Median CLS</div>
@@ -173,7 +181,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
       <div class="kpi-card kpi-ttfb">
         <div class="kpi-label">Median TTFB</div>
         <div class="kpi-value" id="kpi-ttfb">—</div>
-        <div class="kpi-sub">Time To First Byte</div>
+        <div class="kpi-sub">Time to First Byte</div>
       </div>
     </div>
     <div class="charts-grid">
@@ -186,7 +194,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
       </div>
       <div class="chart-card card-inp">
         <div class="chart-title">INP Distribution</div>
-        <div class="chart-subtitle">Core Web Vital · Interaction To Next Paint</div>
+        <div class="chart-subtitle">Core Web Vital · Interaction to Next Paint</div>
         <div class="chart-meta" id="inp-meta"><span class="spinner"></span> Loading...</div>
         <div id="inp-chart-container"><canvas id="inpChart"></canvas></div>
         <div id="inp-note"></div>
@@ -200,15 +208,51 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
     <div class="charts-grid">
       <div class="chart-card card-browser">
         <div class="chart-title">Browser Share</div>
-        <div class="chart-subtitle">Sessions By Browser Type</div>
+        <div class="chart-subtitle">Sessions by browser type</div>
         <div class="chart-meta" id="browser-meta"><span class="spinner"></span> Loading...</div>
         <div id="browser-chart-container"><canvas id="browserChart"></canvas></div>
       </div>
       <div class="chart-card card-sessions">
-        <div class="chart-title">Sessions By Day</div>
-        <div class="chart-subtitle">Daily Session Volume Over Time</div>
+        <div class="chart-title">Sessions by Day</div>
+        <div class="chart-subtitle">Daily session volume over time</div>
         <div class="chart-meta" id="sessions-day-meta"><span class="spinner"></span> Loading...</div>
         <div id="sessions-day-container"><canvas id="sessionsDayChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
+
+  <?php if ($isSuperAdmin || in_array('activity', $userSections ?? [])): ?>
+  <div class="tab-panel" id="panel-activity">
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-activity-top">
+        <div class="kpi-label">Most Visited Page</div>
+        <div class="kpi-value" id="kpi-top-page" style="font-size:14px;word-break:break-all;">—</div>
+        <div class="kpi-sub" id="kpi-top-page-count"></div>
+      </div>
+      <div class="kpi-card kpi-activity-time">
+        <div class="kpi-label">Avg Time on Page</div>
+        <div class="kpi-value" id="kpi-avg-time">—</div>
+        <div class="kpi-sub">Across all activity events</div>
+      </div>
+      <div class="kpi-card kpi-activity-idle">
+        <div class="kpi-label">Avg Idle Duration</div>
+        <div class="kpi-value" id="kpi-avg-idle">—</div>
+        <div class="kpi-sub">Per idle period recorded</div>
+      </div>
+    </div>
+    <div class="charts-grid">
+      <div class="chart-card card-pages">
+        <div class="chart-title">Most Viewed Pages</div>
+        <div class="chart-subtitle">Activity events by page URL</div>
+        <div class="chart-meta" id="pages-meta"><span class="spinner"></span> Loading...</div>
+        <div id="pages-chart-container"><canvas id="pagesChart"></canvas></div>
+      </div>
+      <div class="chart-card card-idle">
+        <div class="chart-title">Idle Period Distribution</div>
+        <div class="chart-subtitle">Duration of idle periods across sessions</div>
+        <div class="chart-meta" id="idle-meta"><span class="spinner"></span> Loading...</div>
+        <div id="idle-chart-container"><canvas id="idleChart"></canvas></div>
       </div>
     </div>
   </div>
@@ -438,6 +482,145 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
     } catch (err) { meta.textContent = ''; cont.innerHTML = `<div class="state-box error">Failed to load: ${err.message}</div>`; }
   }
 
+  // ── Activity events cache ────────────────────────────────────────────────
+  let activityEventsCache = null;
+  async function getActivityEvents() {
+    if (activityEventsCache) return activityEventsCache;
+    const res    = await fetch('/api/events/activity');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const events = await res.json();
+    await Promise.all(events.map(async (e) => {
+      try {
+        const r = await fetch(`/api/events/${e.id}`);
+        if (r.ok) { const full = await r.json(); e.payload = full.payload; }
+      } catch (_) {}
+    }));
+    activityEventsCache = events;
+    return events;
+  }
+
+  // ── Activity KPIs ────────────────────────────────────────────────────────
+  async function loadActivityKpis(events) {
+    // Most visited page
+    const pageCounts = {};
+    for (const e of events) {
+      const page = e.payload?.page || e.page;
+      if (!page) continue;
+      pageCounts[page] = (pageCounts[page] || 0) + 1;
+    }
+    const sortedPages = Object.entries(pageCounts).sort((a, b) => b[1] - a[1]);
+    if (sortedPages.length > 0) {
+      const [topPage, topCount] = sortedPages[0];
+      const el = document.getElementById('kpi-top-page');
+      // Strip origin for display
+      try { el.textContent = new URL(topPage).pathname || topPage; } catch { el.textContent = topPage; }
+      document.getElementById('kpi-top-page-count').textContent = `${topCount} event${topCount !== 1 ? 's' : ''}`;
+    }
+
+    // Avg time on page (ms → seconds)
+    const timesMs = events.map(e => e.payload?.timeOnPageMs).filter(v => v != null && v > 0);
+    const avgTime = timesMs.length > 0 ? Math.round(timesMs.reduce((a, b) => a + b, 0) / timesMs.length) : null;
+    const timeEl  = document.getElementById('kpi-avg-time');
+    if (avgTime !== null) {
+      timeEl.textContent = avgTime >= 60000
+        ? (avgTime / 60000).toFixed(1) + 'm'
+        : Math.round(avgTime / 1000) + 's';
+    }
+
+    // Avg idle duration
+    const idleDurations = events.flatMap(e => (e.payload?.idlePeriods || []).map(p => p.durationMs)).filter(v => v != null);
+    const avgIdle = idleDurations.length > 0 ? Math.round(idleDurations.reduce((a, b) => a + b, 0) / idleDurations.length) : null;
+    const idleEl  = document.getElementById('kpi-avg-idle');
+    if (avgIdle !== null) {
+      idleEl.textContent = avgIdle >= 60000
+        ? (avgIdle / 60000).toFixed(1) + 'm'
+        : Math.round(avgIdle / 1000) + 's';
+    }
+  }
+
+  // ── Most Viewed Pages Chart ──────────────────────────────────────────────
+  async function loadPagesChart() {
+    const meta = document.getElementById('pages-meta');
+    const cont = document.getElementById('pages-chart-container');
+    try {
+      const events = await getActivityEvents();
+      await loadActivityKpis(events);
+
+      const pageCounts = {};
+      for (const e of events) {
+        const page = e.payload?.page || e.page;
+        if (!page) continue;
+        let label;
+        try { label = new URL(page).pathname || '/'; } catch { label = page; }
+        pageCounts[label] = (pageCounts[label] || 0) + 1;
+      }
+
+      const sorted  = Object.entries(pageCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+      const labels  = sorted.map(([p]) => p);
+      const data    = sorted.map(([, c]) => c);
+      const total   = data.reduce((a, b) => a + b, 0);
+
+      meta.innerHTML = `<strong>${total}</strong> activity event${total !== 1 ? 's' : ''} across <strong>${labels.length}</strong> page${labels.length !== 1 ? 's' : ''}`;
+
+      if (total === 0) { cont.innerHTML = '<div class="state-box">No activity data yet.</div>'; return; }
+
+      new Chart(document.getElementById('pagesChart'), {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Events', data, backgroundColor: 'rgba(255,107,53,0.75)', borderColor: 'rgba(255,107,53,0.9)', borderWidth: 1, borderRadius: 4 }] },
+        options: {
+          indexAxis: 'y', responsive: true,
+          scales: {
+            x: { grid: { color: 'rgba(30,30,46,0.8)' }, ticks: { stepSize: 1 } },
+            y: { grid: { display: false }, ticks: { font: { size: 10 } } }
+          },
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => ` ${ctx.parsed.x} event${ctx.parsed.x !== 1 ? 's' : ''} (${((ctx.parsed.x/total)*100).toFixed(1)}%)` } } }
+        }
+      });
+    } catch (err) { meta.textContent = ''; cont.innerHTML = `<div class="state-box error">Failed to load: ${err.message}</div>`; }
+  }
+
+  // ── Idle Period Distribution Chart ───────────────────────────────────────
+  async function loadIdleChart() {
+    const meta = document.getElementById('idle-meta');
+    const cont = document.getElementById('idle-chart-container');
+    try {
+      const events       = await getActivityEvents();
+      const idleDurations = events.flatMap(e => (e.payload?.idlePeriods || []).map(p => p.durationMs)).filter(v => v != null);
+
+      const short  = idleDurations.filter(d => d < 5000).length;
+      const medium = idleDurations.filter(d => d >= 5000 && d < 30000).length;
+      const long   = idleDurations.filter(d => d >= 30000).length;
+      const total  = idleDurations.length;
+
+      meta.innerHTML = `<strong>${total}</strong> idle period${total !== 1 ? 's' : ''} recorded`;
+
+      if (total === 0) { cont.innerHTML = '<div class="state-box">No idle data yet.</div>'; return; }
+
+      new Chart(document.getElementById('idleChart'), {
+        type: 'bar',
+        data: {
+          labels: ['Idle Periods'],
+          datasets: [
+            { label: 'Short (< 5s)',       data: [short],  backgroundColor: 'rgba(0,255,157,0.75)',  borderColor: 'rgba(0,255,157,0.9)',  borderWidth: 1, borderRadius: 4 },
+            { label: 'Medium (5s – 30s)',   data: [medium], backgroundColor: 'rgba(255,204,0,0.75)',  borderColor: 'rgba(255,204,0,0.9)',  borderWidth: 1, borderRadius: 4 },
+            { label: 'Long (> 30s)',        data: [long],   backgroundColor: 'rgba(170,136,255,0.75)', borderColor: 'rgba(170,136,255,0.9)', borderWidth: 1, borderRadius: 4 }
+          ]
+        },
+        options: {
+          indexAxis: 'y', responsive: true,
+          scales: {
+            x: { stacked: true, grid: { color: 'rgba(30,30,46,0.8)' }, ticks: { stepSize: 1 } },
+            y: { stacked: true, grid: { display: false } }
+          },
+          plugins: {
+            legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true, pointStyleWidth: 8 } },
+            tooltip: { callbacks: { label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.x} (${((ctx.parsed.x/total)*100).toFixed(1)}%)` } }
+          }
+        }
+      });
+    } catch (err) { meta.textContent = ''; cont.innerHTML = `<div class="state-box error">Failed to load: ${err.message}</div>`; }
+  }
+
   // ── Lazy load per tab ────────────────────────────────────────────────────
   const loaded = {};
   function loadTabCharts(tabName) {
@@ -445,6 +628,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
     loaded[tabName] = true;
     if (tabName === 'performance') { loadKpis(); loadLcpChart(); loadInpChart(); }
     if (tabName === 'traffic')     { loadBrowserChart(); loadSessionsByDayChart(); }
+    if (tabName === 'activity')    { loadPagesChart(); loadIdleChart(); }
   }
 
   const activeTab = document.querySelector('.tab-btn.active');
