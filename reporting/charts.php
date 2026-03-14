@@ -152,7 +152,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
       <a href="/dashboard" class="btn-back">← Dashboard</a>
       <form class="logout-form" method="POST" action="/auth.php">
         <input type="hidden" name="action" value="logout">
-        <button type="submit">Sign out →</button>
+        <button type="submit">Sign Out →</button>
       </form>
     </div>
   </header>
@@ -185,7 +185,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
       <div class="kpi-card kpi-inp">
         <div class="kpi-label">Median INP</div>
         <div class="kpi-value" id="kpi-inp">—</div>
-        <div class="kpi-sub">Interaction to Next Paint</div>
+        <div class="kpi-sub">Interaction To Next Paint</div>
       </div>
       <div class="kpi-card kpi-cls">
         <div class="kpi-label">Median CLS</div>
@@ -195,7 +195,7 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
       <div class="kpi-card kpi-ttfb">
         <div class="kpi-label">Median TTFB</div>
         <div class="kpi-value" id="kpi-ttfb">—</div>
-        <div class="kpi-sub">Time to First Byte</div>
+        <div class="kpi-sub">Time To First Byte</div>
       </div>
     </div>
     <div class="charts-grid">
@@ -222,13 +222,13 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
     <div class="charts-grid">
       <div class="chart-card card-browser">
         <div class="chart-title">Browser Share</div>
-        <div class="chart-subtitle">Sessions by browser type</div>
+        <div class="chart-subtitle">Sessions By Browser Type</div>
         <div class="chart-meta" id="browser-meta"><span class="spinner"></span> Loading...</div>
         <div id="browser-chart-container"><canvas id="browserChart"></canvas></div>
       </div>
       <div class="chart-card card-sessions">
-        <div class="chart-title">Sessions by Day</div>
-        <div class="chart-subtitle">Daily session volume over time</div>
+        <div class="chart-title">Sessions By Day</div>
+        <div class="chart-subtitle">Daily Session Volume Over Time</div>
         <div class="chart-meta" id="sessions-day-meta"><span class="spinner"></span> Loading...</div>
         <div id="sessions-day-container"><canvas id="sessionsDayChart"></canvas></div>
       </div>
@@ -245,26 +245,26 @@ $userSections = $isSuperAdmin ? null : ($_SESSION['sections'] ?? []);
         <div class="kpi-sub" id="kpi-top-page-count"></div>
       </div>
       <div class="kpi-card kpi-activity-time">
-        <div class="kpi-label">Median Time on Page</div>
+        <div class="kpi-label">Median Time On Page</div>
         <div class="kpi-value" id="kpi-avg-time">—</div>
-        <div class="kpi-sub">Across all activity events</div>
+        <div class="kpi-sub">Across All Activity Events</div>
       </div>
       <div class="kpi-card kpi-activity-idle">
         <div class="kpi-label">Median Idle Duration</div>
         <div class="kpi-value" id="kpi-avg-idle">—</div>
-        <div class="kpi-sub">Per idle period recorded</div>
+        <div class="kpi-sub">Per Idle Period Recorded</div>
       </div>
     </div>
     <div class="charts-grid">
       <div class="chart-card card-pages">
         <div class="chart-title">Most Viewed Pages</div>
-        <div class="chart-subtitle">Activity events by page URL</div>
+        <div class="chart-subtitle">Activity Events By Page URL</div>
         <div class="chart-meta" id="pages-meta"><span class="spinner"></span> Loading...</div>
         <div id="pages-chart-container"><canvas id="pagesChart"></canvas></div>
       </div>
       <div class="chart-card card-idle">
         <div class="chart-title">Idle Period Distribution</div>
-        <div class="chart-subtitle">Duration of idle periods across sessions</div>
+        <div class="chart-subtitle">Duration Of Idle Periods Across Sessions</div>
         <div class="chart-meta" id="idle-meta"><span class="spinner"></span> Loading...</div>
         <div id="idle-chart-container"><canvas id="idleChart"></canvas></div>
       </div>
