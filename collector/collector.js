@@ -599,7 +599,7 @@ function startActivityLogger() {
     setTimeout(() => { // ensure this runs after the main thread is free (e.g., after load event handlers) so we capture final web vitals values
      const vitals = webVitals.finalize();
      sendType("performance", { ...perfData, webVitals: vitals });
-    }, 5000); // delay can be tuned; we want to capture any late CLS shifts or INP interactions that happen shortly after load, but we don't want to delay too long
+    }, 10000); // delay can be tuned; we want to capture any late CLS shifts or INP interactions that happen shortly after load, but we don't want to delay too long
   });
 
   // ACTIVITY: on leave (pagehide) send one final payload
